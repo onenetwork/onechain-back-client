@@ -1,4 +1,4 @@
-# onechain-back
+# onechain-back-client
 
 Provides the client API for One Network Enterprises' Backchain.  The client API frees
 the client from needing to be aware of the specifics of the Backchain implementation
