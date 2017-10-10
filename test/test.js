@@ -14,10 +14,10 @@ describe('backchain-client', function() {
       bc.post("0xafef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480").then(function(result) {
         return bc.verify("0xafef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
       }).then(function(verified) {
-        expect(verified).to.equal(true);
+        expect(verified).to.be.true;
         return bc.verify("0xbfef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
       }).then(function(verified) {
-        expect(verified).to.equal(false);
+        expect(verified).to.be.false;
         return bc.hashCount();
       }).then(function(result) {
         expect(result).to.above(0);
