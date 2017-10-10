@@ -5,11 +5,15 @@
   "description": "Sample client for ONE's Backchain",
   "main": "backchain-client.js",
   "scripts": {
-    "test": "test"
+    "test": "/usr/bin/env node node_modules/mocha/bin/mocha"
   },
-  "author": "onenetwork.com",
+  "author": "onenetwork",
   "license": "Apache-2.0",
   "dependencies": {
     "web3": "^1.0.0-beta.22"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
   }
 }
