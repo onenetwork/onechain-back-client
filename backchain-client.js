@@ -7,14 +7,25 @@ var Web3 = require('Web3');
  * Constructs a new client
  * @param {url} HTTP URL of the blockchain (e.g. http://localhost:8545)
  */
-module.exports = function(web3) {
-  var abi = JSON.parse(fs.readFileSync('BackchainABI.json').toString());
-  var contract = new web3.eth.Contract(abi, "0x7da7b16f366f14adeb589f628c9e7232c6dfb0e2", {
-    from: "0xb9afc7def72f3025892da2912348b3e877f36f94"
+module.exports = function(config) {
+  if (config.blockchain != 'eth') {
+    throw new Error('blockchain not supported: ' + config.blockchain);
+  }
+  
+  var web3 = new Web3(new Web3.providers.HttpProvider(config.url));
+  
+  // Warning - this abi must be updated any time Backchain.sol changes
+  var abi = [{"type":"function","payable":false,"outputs":[{"type":"uint256","name":""}],"name":"hashCount","inputs":[],"constant":true},{"type":"function","payable":false,"outputs":[{"type":"bytes32","name":""}],"name":"getHash","inputs":[{"type":"uint256","name":"index"}],"constant":true},{"type":"function","payable":false,"outputs":[{"type":"bool","name":""}],"name":"verify","inputs":[{"type":"bytes32","name":"hash"}],"constant":true},{"type":"function","payable":false,"outputs":[],"name":"post","inputs":[{"type":"bytes32","name":"hash"}],"constant":false},{"type":"function","payable":false,"outputs":[{"type":"address","name":""}],"name":"orchestrator","inputs":[],"constant":true},{"type":"function","payable":false,"outputs":[{"type":"bool","name":""}],"name":"hashMapping","inputs":[{"type":"bytes32","name":""}],"constant":true},{"type":"constructor","payable":false,"inputs":[]}];
+  
+  var contract = new web3.eth.Contract(abi, config.contractAddress, {
+    from: config.fromAddress
   });
   return {
+    config: config,
     hashCount: function() {
-      return contract.methods.hashCount().call();
+      return contract.methods.hashCount().call().then(function(result) { 
+        return Promise.resolve(parseInt(result)) 
+      });
     },
     post: function(hash) {
       return contract.methods.post(hash).send();
@@ -30,27 +41,3 @@ module.exports = function(web3) {
     }
   };
 };
-
-var bc = new module.exports(new Web3(new Web3.providers.HttpProvider("http://localhost:8545")));
-
-bc.hashCount().then(function(result) {
-  console.info(result);
-  return bc.post("0xafef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
-}).then(function() {
-  console.info("post done");
-  return bc.verify("0xafef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
-}).then(function(verified) {
-  console.info("verified add? ", verified);
-  return bc.verify("0xbfef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
-}).then(function(verified) {
-  console.info("verified no-add? ", verified);
-  return bc.hashCount();
-}).then(function(result) {
-  console.info("new count", result);
-  return bc.getHash(0);
-}).then(function(hashAtZero) {
-  console.info("hashAtZero", hashAtZero);
-  return bc.getOrchestrator();
-}).then(function(orchestrator) {
-  console.info("orchestrator", orchestrator);
-});
