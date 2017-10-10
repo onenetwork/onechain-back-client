@@ -1,5 +1,6 @@
 var backchainClient = require('../backchain-client')
 var expect = require('chai').expect;
+var sha256 = require('js-sha256').sha256;
 
 var bc = backchainClient({ 
   blockchain: 'eth', 
@@ -8,21 +9,33 @@ var bc = backchainClient({
   fromAddress: "0xb9afc7def72f3025892da2912348b3e877f36f94"
 });
 
+function newHash() { return "0x" + sha256('' + new Date().getTime() + ' ' + Math.random()); }
+var sampleHash = newHash();
+
 describe('backchain-client', function() {
   describe('etherium', function() {
     it('supports all smart contract methods', function() {
-      bc.post("0xafef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480").then(function(result) {
-        return bc.verify("0xafef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
+      var initialHashCount;
+      
+      bc.hashCount().then(function(hashCount) {
+        initialHashCount = hashCount;
+        return bc.post(sampleHash);
+      }).then(function(hashCount) {
+        return bc.verify(sampleHash);
       }).then(function(verified) {
         expect(verified).to.be.true;
-        return bc.verify("0xbfef74575dfb567cd95678f80c8c2681d2c084da2a95b3643cf6e13e739f4480");
+        return bc.hashCount();
+      }).then(function(hashCount) {
+        expect(hashCount).to.equal(initialHashCount + 1);
+        return bc.verify(newHash());
       }).then(function(verified) {
         expect(verified).to.be.false;
         return bc.hashCount();
-      }).then(function(result) {
-        expect(result).to.above(0);
-        return bc.getHash(0);
-      }).then(function(hashAtZero) {
+      }).then(function(hashCount) {
+        expect(hashCount).to.equal(initialHashCount + 1);
+        return bc.getHash(hashCount - 1);
+      }).then(function(hash) {
+        expect(hash).to.equal(sampleHash);
         return bc.getOrchestrator();
       }).then(function(orchestrator) {
         expect(orchestrator.toUpperCase()).to.equal(bc.config.fromAddress.toUpperCase());
