@@ -5,8 +5,8 @@ var sha256 = require('js-sha256').sha256;
 var bc = backchainClient({ 
   blockchain: 'eth', 
   url: 'http://localhost:8545', 
-  contractAddress: "0x7da7b16f366f14adeb589f628c9e7232c6dfb0e2",
-  fromAddress: "0xb9afc7def72f3025892da2912348b3e877f36f94"
+  contractAddress: "0xc651792a7014053fcaecd7cb39533be1b84f9503",
+  fromAddress: "0xf796b0a29a1e005cb71488055b2c6ff951e973b3"
 });
 
 function newHash() { return "0x" + sha256('' + new Date().getTime() + ' ' + Math.random()); }
