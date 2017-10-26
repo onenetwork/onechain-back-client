@@ -7,16 +7,18 @@ underlying blockchain implementation (e.g. Etherium or Hyperledger Fabric).
 Licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 
-## Installation
+## Javascript Client
 
-The client is available as a public npm module.  You can install it using the following command:
+### Installation
+
+The javascript client is available as a public npm module.  You can install it using the following command:
 
 ```
 npm install -P @onenetwork/one-backchain-client
 ```
 
 
-## Sample Usage
+### Sample Usage
 
 ```javascript
 oneBcClient = require('@onenetwork/one-backchain-client');
@@ -56,9 +58,9 @@ Backchain hashCount is: 13
 ```
 
 
-## API
+### API
 
-### Creation
+#### Creation
 
 A call to `require('@onenetwork/one-backchain-client')` returns a factory function which returns
 a new client when called.  It expects a single parameter of the following form:
@@ -79,7 +81,7 @@ a new client when called.  It expects a single parameter of the following form:
 }
 ```
 
-### Methods
+#### Methods
 
 The client object returned by the factory function supports the following methods:
 
@@ -92,7 +94,7 @@ The client object returned by the factory function supports the following method
 | verify(hash) | Returns a promise which returns true if the given hash is present in the Backchain, false otherwise. |
 
 
-### Properties
+#### Properties
 
 The client object returned by the factory function supports the following properties:
 
