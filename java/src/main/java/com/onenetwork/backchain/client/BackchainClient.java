@@ -24,7 +24,7 @@ public interface BackchainClient {
 	 * 
 	 * @return total number of hashes stored in the backchain
 	 */
-	int hashCount();
+	long hashCount();
 
 	/**
 	 * Posts a new hash to the Backchain. 

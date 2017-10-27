@@ -42,6 +42,9 @@ task generateContractWrapper(type: Exec, dependsOn: initWeb3jCLI) {
   doLast {
     ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/BackchainABI.java', match: 'public final class BackchainABI', replace: 'class BackchainABI')
   }
+  onlyIf {
+    !file("./build/gen-src/com/onenetwork/backchain/client/eth/BackchainABI.java").exists() 
+  }
 }
 
 compileJava {
