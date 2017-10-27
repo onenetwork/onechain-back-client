@@ -23,14 +23,14 @@ public class EthereumTest {
 
 	@Test
 	public void testEthereumBackchain() throws Exception {
-		EthereumConfig cfg = new EthereumConfig().setUrl("http://55.55.55.55:8545")
-				.setContractAddress("0x67932516a4d96b4c17122e23110e52240949c8ec")
-				.setPrivateKey("0x6c00cc9e01a29ad8fd918ba26a3d4aea1bb22efc06347d78bc18a6216798328a")
+		EthereumConfig cfg = new EthereumConfig().setUrl("http://vagrant.onenetwork.com:8545")
+				.setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
+				.setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
 				.setGasPrice(BigInteger.valueOf(0L)).setGasLimit(BigInteger.valueOf(999999L));
 		BackchainClient bk = BackchainClientFactory.newBackchainClient(cfg);
 
 		long initialHashCount = bk.hashCount();
-		assertEquals("0xff17190af4e2a747f32ec9fe0ad49867fefe0931", bk.getOrchestrator());
+		assertEquals("0xece1355c30af00ff4f03f0e37f7822ce4b660aa3", bk.getOrchestrator());
 
 		String hash = newHash();
 		bk.post(hash);
