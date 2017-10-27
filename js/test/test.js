@@ -8,8 +8,8 @@ var sampleHash = newHash();
 var bc = backchainClient({ 
   blockchain: 'eth', 
   url: 'http://localhost:8545', 
-  contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2",
-  privateKey: "0x7deb3b7a9083352c5feca242ff1df7ffa9fa114a397ef8bcea16a969bfca9c3e"
+  contractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138",
+  privateKey: "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
 });
 
 describe('backchain-client', function() {
