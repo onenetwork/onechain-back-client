@@ -1,4 +1,7 @@
-apply plugin: 'java-library'
+plugins {
+  id 'com.github.johnrengelman.shadow' version '2.0.1'
+  id 'java-library'
+}
 
 repositories {
   jcenter()
@@ -50,4 +53,8 @@ task generateContractWrapper(type: Exec, dependsOn: initWeb3jCLI) {
 compileJava {
   dependsOn generateContractWrapper
   source += fileTree(dir: 'build/gen-src', include: '**/*.java')
+}
+
+build {
+  dependsOn shadowJar
 }
