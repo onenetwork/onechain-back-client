@@ -1,0 +1,48 @@
+apply plugin: 'java-library'
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  api 'org.web3j:core:2.3.1'
+
+  testImplementation 'junit:junit:4.12'
+}
+
+version = '0.1'
+
+jar {
+  manifest {
+    attributes(
+      'Implementation-Title': project.name,
+      'Implementation-Version': project.version
+    )
+  }
+}
+
+task initWeb3jcli(dependsOn: init) {
+  description 'Downloads and prepares the Web3j command line interface'
+  doLast {
+    ant.mkdir(dir: './build')
+    ant.get(src: 'https://github.com/web3j/web3j/releases/download/v2.3.1/web3j-2.3.1.zip', dest: './build/web3j.zip')
+    ant.unzip(src: './build/web3j.zip', dest: './build')
+    ant.move(file: './build/web3j-2.3.1', tofile: './build/web3j')
+  }
+  onlyIf {
+    !file("./build/web3j").exists() 
+  }
+}
+
+task generateContractWrapper(type: Exec, dependsOn: initWeb3jcli) {
+  workingDir '.'
+  commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '../BackchainABI.bin', '../BackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.java.eth'
+}
+
+task contractWrapper(dependsOn: generateContractWrapper) {
+  description 'Generates and compiles java classes representing the Backchain smart contract'
+  doLast {
+  }
+}
+
+compileJava.dependsOn contractWrapper
