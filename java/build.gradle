@@ -6,11 +6,10 @@ repositories {
 
 dependencies {
   api 'org.web3j:core:2.3.1'
-
   testImplementation 'junit:junit:4.12'
 }
 
-version = '0.1'
+version = '0.1.0'
 
 jar {
   manifest {
@@ -21,8 +20,9 @@ jar {
   }
 }
 
-task initWeb3jcli(dependsOn: init) {
+task initWeb3jCLI(dependsOn: init) {
   description 'Downloads and prepares the Web3j command line interface'
+  group 'Ethereum'
   doLast {
     ant.mkdir(dir: './build')
     ant.get(src: 'https://github.com/web3j/web3j/releases/download/v2.3.1/web3j-2.3.1.zip', dest: './build/web3j.zip')
@@ -34,15 +34,17 @@ task initWeb3jcli(dependsOn: init) {
   }
 }
 
-task generateContractWrapper(type: Exec, dependsOn: initWeb3jcli) {
+task generateContractWrapper(type: Exec, dependsOn: initWeb3jCLI) {
+  description 'Generates java classes representing the Backchain smart contract'
+  group 'Ethereum'
   workingDir '.'
-  commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '../BackchainABI.bin', '../BackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.java.eth'
-}
-
-task contractWrapper(dependsOn: generateContractWrapper) {
-  description 'Generates and compiles java classes representing the Backchain smart contract'
+  commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '../BackchainABI.bin', '../BackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
   doLast {
+    ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/BackchainABI.java', match: 'public final class BackchainABI', replace: 'class BackchainABI')
   }
 }
 
-compileJava.dependsOn contractWrapper
+compileJava {
+  dependsOn generateContractWrapper
+  source += fileTree(dir: 'build/gen-src', include: '**/*.java')
+}
