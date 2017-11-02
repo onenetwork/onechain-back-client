@@ -24,11 +24,12 @@ npm install -P @onenetwork/one-backchain-client
 oneBcClient = require('@onenetwork/one-backchain-client');
 
 /**
- * Instantiate the backchain client.  
+ * Instantiate the backchain client,
+ * providing real values for url, contractAddress and privateKey
  */
 var bc = oneBcClient({ 
   blockchain: 'eth', 
-  url: 'http://localhost:8545', 
+  url: 'http://192.168.201.55:8545', 
   contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2",
   privateKey: "0x7deb3b7a9083352c5feca242ff1df7ffa9fa114a397ef8bcea16a969bfca9c3e"
 });
