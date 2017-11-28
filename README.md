@@ -7,8 +7,8 @@ or [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric)).
 
 ONE provides client APIs for:
 
- - [Javascript](#Javascript-Client)
- - [Java](#Java-Client)
+ - [Javascript](#javascript-Client)
+ - [Java](#java-Client)
 
 <br/>
 Licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
