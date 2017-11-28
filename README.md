@@ -4,8 +4,15 @@ Provides the client API for One Network Enterprises' Backchain.  Once constructe
 client API frees the client as much as possible from the specifics of the Backchain's 
 underlying blockchain implementation (e.g. Etherium or Hyperledger Fabric).
 
-Licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+ONE provides client APIs for:
 
+ - [Javascript](#Javascript-Client)
+ - [Java](#Java-Client)
+
+<br/>
+Licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+<br/>
+<br/>
 
 ## Javascript Client
 
@@ -102,3 +109,45 @@ The client object returned by the factory function supports the following proper
 | Method | Description |
 | --- | --- |
 | config | Captures the user's initial configuration, including `blockchain`, `url`, `contractAddress` and `privateKey` |
+
+
+## Java Client
+
+### Installation
+
+The java client is available as a maven dependency from ONE's bintray repo: <a href="https://dl.bintray.com/onenetwork/onechain">https://dl.bintray.com/onenetwork/onechain</a>
+
+```
+<dependency>
+  <groupId>com.onenetwork.onechain</groupId>
+  <artifactId>onechain-back-client</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
+### Sample Usage
+
+```java
+EthereumConfig cfg = new EthereumConfig()
+  .setUrl("http://backchain-vagrant.onenetwork.com:8545")
+  .setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
+  .setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
+  .setGasPrice(BigInteger.valueOf(0L))
+  .setGasLimit(BigInteger.valueOf(999999L));
+BackchainClient bk = BackchainClientFactory.newBackchainClient(cfg);
+
+System.out.println("Backchain hashCount : " + bk.hashCount());
+String sampleHash = "0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3";
+System.out.println(sampleHash + " is on the Backchain? " + bk.verify(sampleHash));
+```
+
+Sample output:
+```
+Backchain hashCount is: 13
+0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3 is on the Backchain? true
+```
+
+
+### API
+
+Please view the <a href="https://onenetwork.github.io/onechain-back-client/javadoc/">ONE Backchain Client Javadocs</a>
