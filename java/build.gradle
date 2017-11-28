@@ -40,6 +40,12 @@ task initWeb3jCLI(dependsOn: init) {
   }
 }
 
+sourceSets {
+  generated{
+    java.srcDir "./build/gen-src"
+  }
+}
+
 task generateContractWrapper(type: Exec, dependsOn: initWeb3jCLI) {
   description 'Generates java classes representing the Backchain smart contract'
   group 'Ethereum'
@@ -55,7 +61,7 @@ task generateContractWrapper(type: Exec, dependsOn: initWeb3jCLI) {
 
 compileJava {
   dependsOn generateContractWrapper
-  source += fileTree(dir: 'build/gen-src', include: '**/*.java')
+  source += sourceSets.generated.java
 }
 
 publishing {
