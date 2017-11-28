@@ -32,6 +32,7 @@ task initWeb3jCLI(dependsOn: init) {
     ant.get(src: 'https://github.com/web3j/web3j/releases/download/v2.3.1/web3j-2.3.1.zip', dest: './build/web3j.zip')
     ant.unzip(src: './build/web3j.zip', dest: './build')
     ant.move(file: './build/web3j-2.3.1', tofile: './build/web3j')
+    ant.chmod(file: './build/web3j/bin/web3j', perm: 'ugo+x')
   }
   onlyIf {
     !file("./build/web3j").exists() 
