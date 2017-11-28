@@ -2,6 +2,7 @@ plugins {
   id 'java-library'
   id "com.jfrog.bintray" version "1.7.3"
   id 'maven-publish'
+  id 'eclipse'
 }
 
 repositories {
