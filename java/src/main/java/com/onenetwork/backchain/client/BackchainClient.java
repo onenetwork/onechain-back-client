@@ -1,5 +1,9 @@
 package com.onenetwork.backchain.client;
 
+/**
+ * Interface for interacting with the Backchain.  Acquire an instance
+ * via {@link BackchainClientFactory}.  
+ */
 public interface BackchainClient {
 
 	/**
@@ -37,6 +41,7 @@ public interface BackchainClient {
 	/**
 	 * Returns true if the given hash is present in the Backchain, false otherwise.
 	 * 
+	 * @param hash has to be verified
 	 * @return true if the given hash is present in the Backchain, false otherwise
 	 */
 	boolean verify(String hash);

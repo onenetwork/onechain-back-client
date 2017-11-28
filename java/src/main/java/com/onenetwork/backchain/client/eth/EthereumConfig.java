@@ -4,6 +4,10 @@ import java.math.BigInteger;
 
 import com.onenetwork.backchain.client.BackchainClientConfig;
 
+/**
+ * Implementation of {@link BackchainClientConfig} for an
+ * <a href="https://www.ethereum.org/">Ethereum</a>-based Backchain.
+ */
 public class EthereumConfig implements BackchainClientConfig {
 
 	private String url;

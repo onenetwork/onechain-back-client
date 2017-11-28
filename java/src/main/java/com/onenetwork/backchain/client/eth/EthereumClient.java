@@ -9,13 +9,21 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
 import com.onenetwork.backchain.client.BackchainClient;
+import com.onenetwork.backchain.client.BackchainClientConfig;
 
+/**
+ * Implementation of {@link BackchainClient} for an
+ * <a href="https://www.ethereum.org/">Ethereum</a>-based Backchain.
+ */
 public class EthereumClient implements BackchainClient {
 
 	private Credentials credentials;
 	private Web3j web3j;
 	private BackchainABI backchainABI;
 
+	/**
+	 * @param config Ethereum-based {@link BackchainClientConfig}
+	 */
 	public EthereumClient(EthereumConfig config) {
 		web3j = Web3j.build(new HttpService(config.getUrl()));
 		credentials = Credentials.create(config.getPrivateKey());

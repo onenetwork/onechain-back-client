@@ -9,9 +9,18 @@ repositories {
   jcenter()
 }
 
+sourceSets {
+  testCompile {
+    java.srcDir "./src/live-test/java"
+  }
+  generated {
+    java.srcDir "./build/gen-src"
+  }
+}
+
 dependencies {
   api 'org.web3j:core:2.3.1'
-  testImplementation 'junit:junit:4.12'
+  testCompile 'junit:junit:4.12'
 }
 
 version = '0.1.0'
@@ -37,12 +46,6 @@ task initWeb3jCLI(dependsOn: init) {
   }
   onlyIf {
     !file("./build/web3j").exists() 
-  }
-}
-
-sourceSets {
-  generated{
-    java.srcDir "./build/gen-src"
   }
 }
 
