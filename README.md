@@ -2,7 +2,8 @@
 
 Provides the client API for One Network Enterprises' Backchain.  Once constructed, the 
 client API frees the client as much as possible from the specifics of the Backchain's 
-underlying blockchain implementation (e.g. Etherium or Hyperledger Fabric).
+underlying blockchain implementation (e.g. [Etherium](https://www.ethereum.org/)
+or [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric)).
 
 ONE provides client APIs for:
 
