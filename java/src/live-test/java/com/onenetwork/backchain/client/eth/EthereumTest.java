@@ -48,7 +48,7 @@ public class EthereumTest {
 	public void testParticipant() throws Exception {
 		EthereumConfig cfg = new EthereumConfig().setUrl("http://backchain-vagrant.onenetwork.com:8545")
 				.setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
-				.setPrivateKey("0x69bc764651de75758c489372c694a39aa890f911ba5379caadc08f44f8173051")
+				//.setPrivateKey("0x69bc764651de75758c489372c694a39aa890f911ba5379caadc08f44f8173051")
 				.setGasPrice(BigInteger.valueOf(0L)).setGasLimit(BigInteger.valueOf(999999L));
 		BackchainClient bk = BackchainClientFactory.newBackchainClient(cfg);
 

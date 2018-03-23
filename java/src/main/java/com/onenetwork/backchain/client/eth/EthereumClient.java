@@ -7,6 +7,7 @@ import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.ClientTransactionManager;
 
 import com.onenetwork.backchain.client.BackchainClient;
 import com.onenetwork.backchain.client.BackchainClientConfig;
@@ -17,7 +18,6 @@ import com.onenetwork.backchain.client.BackchainClientConfig;
  */
 public class EthereumClient implements BackchainClient {
 
-	private Credentials credentials;
 	private Web3j web3j;
 	private BackchainABI backchainABI;
 
@@ -26,9 +26,16 @@ public class EthereumClient implements BackchainClient {
 	 */
 	public EthereumClient(EthereumConfig config) {
 		web3j = Web3j.build(new HttpService(config.getUrl()));
-		credentials = Credentials.create(config.getPrivateKey());
-		backchainABI = BackchainABI.load(config.getContractAddress(), web3j, credentials, config.getGasPrice(),
-				config.getGasLimit());
+		if (config.getPrivateKey() != null) {
+			Credentials credentials = Credentials.create(config.getPrivateKey());
+			backchainABI = BackchainABI.load(config.getContractAddress(), web3j, credentials, config.getGasPrice(),
+					config.getGasLimit());
+		}
+		else {
+			ClientTransactionManager tm = new ClientTransactionManager(web3j, "0x00000000000000000000000000000000");
+			backchainABI = BackchainABI.load(config.getContractAddress(), web3j, tm, config.getGasPrice(),
+					config.getGasLimit());
+		}
 	}
 
 	interface Supplier<T> {
