@@ -38,8 +38,7 @@ oneBcClient = require('@onenetwork/one-backchain-client');
 var bc = oneBcClient({ 
   blockchain: 'eth', 
   url: 'http://192.168.201.55:8545', 
-  contractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138",
-  privateKey: "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
+  contractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138"
 });
 
 /**
@@ -85,7 +84,8 @@ a new client when called.  It expects a single parameter of the following form:
   // when using eth as blockchain, provide the address to which the Backchain etherium contract has been bound in the Ethereum blockchain
   contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2",
   
-  // when using eth as blockchainn, provide the private key of your account in the Ethereum blockchain
+  // When using eth as blockchainn, provide the private key of your account in the Ethereum blockchain.
+  // You must provide your privateKey if you are posting.  It can be omitted if you are only verifying.
   privateKey: "0x7deb3b7a9083352c5feca242ff1df7ffa9fa114a397ef8bcea16a969bfca9c3e"
 }
 ```
