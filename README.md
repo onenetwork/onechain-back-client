@@ -127,9 +127,7 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 ```java
 EthereumConfig cfg = new EthereumConfig()
   .setUrl("http://backchain-vagrant.onenetwork.com:8545")
-  .setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
-  .setGasPrice(BigInteger.valueOf(0L))
-  .setGasLimit(BigInteger.valueOf(999999L));
+  .setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138");
 BackchainClient bk = BackchainClientFactory.newBackchainClient(cfg);
 
 System.out.println("Backchain hashCount : " + bk.hashCount());
