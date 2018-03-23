@@ -33,7 +33,7 @@ oneBcClient = require('@onenetwork/one-backchain-client');
 
 /**
  * Instantiate the backchain client,
- * providing real values for url, contractAddress and privateKey
+ * providing real values for url and contractAddress
  */
 var bc = oneBcClient({ 
   blockchain: 'eth', 
@@ -82,11 +82,7 @@ a new client when called.  It expects a single parameter of the following form:
   url: 'http://localhost:8545', 
   
   // when using eth as blockchain, provide the address to which the Backchain etherium contract has been bound in the Ethereum blockchain
-  contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2",
-  
-  // When using eth as blockchainn, provide the private key of your account in the Ethereum blockchain.
-  // You must provide your privateKey if you are posting.  It can be omitted if you are only verifying.
-  privateKey: "0x7deb3b7a9083352c5feca242ff1df7ffa9fa114a397ef8bcea16a969bfca9c3e"
+  contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2"
 }
 ```
 
@@ -109,7 +105,7 @@ The client object returned by the factory function supports the following proper
 
 | Method | Description |
 | --- | --- |
-| config | Captures the user's initial configuration, including `blockchain`, `url`, `contractAddress` and `privateKey` |
+| config | Captures the user's initial configuration, including `blockchain`, `url` and `contractAddress` |
 
 
 ## Java Client
@@ -122,7 +118,7 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 <dependency>
   <groupId>com.onenetwork.onechain</groupId>
   <artifactId>onechain-back-client</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -132,7 +128,6 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 EthereumConfig cfg = new EthereumConfig()
   .setUrl("http://backchain-vagrant.onenetwork.com:8545")
   .setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
-  .setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
   .setGasPrice(BigInteger.valueOf(0L))
   .setGasLimit(BigInteger.valueOf(999999L));
 BackchainClient bk = BackchainClientFactory.newBackchainClient(cfg);

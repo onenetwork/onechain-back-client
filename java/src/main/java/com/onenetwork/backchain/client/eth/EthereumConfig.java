@@ -66,6 +66,7 @@ public class EthereumConfig implements BackchainClientConfig {
 	/**
 	 * Sets the private key of the Ethereum client, as a base64-encoded string
 	 * starting with "0x".  For example, "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
+	 * Needed only if you intend to post to the backchain.  If you are only verifying, you can skip this.
 	 * @param privateKey private key of the Ethereum client, as a base64-encoded string starting with "0x"
 	 * @return this config object
 	 */
