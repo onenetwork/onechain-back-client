@@ -11,18 +11,25 @@ module.exports = function(config) {
   if (config.blockchain != 'eth') {
     throw new Error('blockchain not supported: ' + config.blockchain);
   }
-
-  var web3 = new Web3(new Web3.providers.HttpProvider(config.url));
+  
+  var web3 = null;
+  if(config.web3Provider) {
+    web3 = new Web3(config.web3Provider);
+  } else {
+    web3 = new Web3(new Web3.providers.HttpProvider(config.url));
+  }
 
   // Warning - this abi must be updated any time Backchain.sol changes
   var abi = [{"type":"function","payable":false,"outputs":[{"type":"uint256","name":""}],"name":"hashCount","inputs":[],"constant":true},{"type":"function","payable":false,"outputs":[{"type":"bytes32","name":""}],"name":"getHash","inputs":[{"type":"uint256","name":"index"}],"constant":true},{"type":"function","payable":false,"outputs":[{"type":"bool","name":""}],"name":"verify","inputs":[{"type":"bytes32","name":"hash"}],"constant":true},{"type":"function","payable":false,"outputs":[],"name":"post","inputs":[{"type":"bytes32","name":"hash"}],"constant":false},{"type":"function","payable":false,"outputs":[{"type":"address","name":""}],"name":"orchestrator","inputs":[],"constant":true},{"type":"function","payable":false,"outputs":[{"type":"bool","name":""}],"name":"hashMapping","inputs":[{"type":"bytes32","name":""}],"constant":true},{"type":"constructor","payable":false,"inputs":[]}];
 
-  if (config.privateKey) {
-    config.fromAddress = web3.eth.accounts.privateKeyToAccount(config.privateKey).address;
-  }
-  else {
-    // read-only access
-    config.fromAddress = '0x0000000000000000000000000000000000000000'; 
+  if(!config.fromAddress) {
+    if (config.privateKey) {
+      config.fromAddress = web3.eth.accounts.privateKeyToAccount(config.privateKey).address;
+    }
+    else {
+      // read-only access
+      config.fromAddress = '0x0000000000000000000000000000000000000000'; 
+    }
   }
 
   var contract = new web3.eth.Contract(abi, config.contractAddress, {
