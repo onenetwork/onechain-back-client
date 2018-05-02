@@ -95,7 +95,14 @@ module.exports = {
             "inputs": []
         }];
 
-        config.fromAddress = web3.eth.accounts.privateKeyToAccount(config.privateKey).address;
+        if (!config.fromAddress) {
+            if (config.privateKey) {
+                config.fromAddress = web3.eth.accounts.privateKeyToAccount(config.privateKey).address;
+            } else {
+                //read-only access
+                config.fromAddress = '0x0000000000000000000000000000000000000000';
+            }
+        }
         var contract = new web3.eth.Contract(abi, config.contractAddress, {
             from: config.fromAddress
         });
@@ -131,355 +138,340 @@ module.exports = {
             web3 = config.web3;
         } else {
             web3 = new Web3(new Web3.providers.HttpProvider(config.url));
+
         }
 
         // Warning - this abi must be updated any time DisputeBackchain.sol changes
         var abi = [{
-                "constant": true,
-                "inputs": [],
-                "name": "getDisputeCount",
-                "outputs": [{
-                    "name": "",
-                    "type": "uint256"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                    "name": "hashID",
-                    "type": "bytes32"
-                }],
-                "name": "getDisputeBasicDetail",
-                "outputs": [{
-                        "name": "",
-                        "type": "address"
-                    },
-                    {
-                        "name": "",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "",
-                        "type": "bytes32[]"
-                    }
-                ],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                    "name": "hashID",
-                    "type": "bytes32"
-                }],
-                "name": "getDisputedSummaryDetails",
-                "outputs": [{
-                        "name": "",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "",
-                        "type": "string"
-                    },
-                    {
-                        "name": "",
-                        "type": "string"
-                    }
-                ],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "stateValue",
-                        "type": "string"
-                    },
-                    {
-                        "name": "reasonValue",
-                        "type": "string"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{
-                    "name": "hashID",
-                    "type": "bytes32"
-                }],
-                "name": "closeDispute",
-                "outputs": [],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{
-                        "name": "disputeID",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "disputePartyAddress",
-                        "type": "address"
-                    },
-                    {
-                        "name": "disputedTransactionID",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "disputedBusinessTransactionIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "reasonCode",
-                        "type": "string"
-                    }
-                ],
-                "name": "submitDispute",
-                "outputs": [],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "submittedDateStart",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "submittedDateEnd",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "closedDateStart",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "closedDateEnd",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                    "name": "hashID",
-                    "type": "bytes32"
-                }],
-                "name": "verify",
-                "outputs": [{
-                    "name": "",
-                    "type": "bool"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "disputePartyAddress",
-                        "type": "address"
-                    },
-                    {
-                        "name": "disputedTransactionID",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "disputedBusinessTransactionIDs",
-                        "type": "bytes32[]"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "disputingParty",
-                        "type": "address"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{
-                    "name": "valInMinute",
-                    "type": "uint256"
-                }],
-                "name": "setDisputeSubmissionWindowInMinutes",
-                "outputs": [],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "submittedDateStart",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "submittedDateEnd",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "closedDateStart",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "closedDateEnd",
-                        "type": "uint256"
-                    },
-                    {
-                        "name": "stateValue",
-                        "type": "string"
-                    },
-                    {
-                        "name": "reasonValue",
-                        "type": "string"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "getDisputIDs",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "getDisputeSubmissionWindowInMinutes",
-                "outputs": [{
-                    "name": "",
-                    "type": "uint256"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "disputedTransactionID",
-                        "type": "bytes32"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                    "name": "",
-                    "type": "bytes32"
-                }],
-                "name": "hashMapping",
-                "outputs": [{
-                    "name": "",
-                    "type": "bool"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{
-                        "name": "hashIDs",
-                        "type": "bytes32[]"
-                    },
-                    {
-                        "name": "disputedBusinessTransactionIds",
-                        "type": "bytes32[]"
-                    }
-                ],
-                "name": "findDispute",
-                "outputs": [{
-                    "name": "",
-                    "type": "bytes32[]"
-                }],
-                "payable": false,
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "payable": false,
-                "type": "constructor"
-            }
-        ];
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputingPartys",
+                "type": "address[]"
+            }, {
+                "name": "disputedTransactionIDs",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputedBusinessTransactionIDs",
+                "type": "bytes32[]"
+            }],
+            "name": "findDisputes",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "id",
+                "type": "bytes32"
+            }],
+            "name": "getDisputeBasicDetail",
+            "outputs": [{
+                "name": "",
+                "type": "address"
+            }, {
+                "name": "",
+                "type": "bytes32"
+            }, {
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "reasonValue",
+                "type": "string"
+            }],
+            "name": "filterDisputesByReason",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "stateValue",
+                "type": "string"
+            }],
+            "name": "filterDisputesByState",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "id",
+                "type": "bytes32"
+            }],
+            "name": "getDisputedSummaryDetails",
+            "outputs": [{
+                "name": "",
+                "type": "uint256"
+            }, {
+                "name": "",
+                "type": "uint256"
+            }, {
+                "name": "",
+                "type": "string"
+            }, {
+                "name": "",
+                "type": "string"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": false,
+            "inputs": [{
+                "name": "id",
+                "type": "bytes32"
+            }],
+            "name": "closeDispute",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "reasonValues",
+                "type": "uint256[]"
+            }],
+            "name": "filterDisputesByReason",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "submittedDateStart",
+                "type": "uint256"
+            }, {
+                "name": "submittedDateEnd",
+                "type": "uint256"
+            }, {
+                "name": "closedDateStart",
+                "type": "uint256"
+            }, {
+                "name": "closedDateEnd",
+                "type": "uint256"
+            }],
+            "name": "filterDisputesByDates",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": false,
+            "inputs": [{
+                "name": "disputeID",
+                "type": "bytes32"
+            }, {
+                "name": "disputingPartyAddress",
+                "type": "address"
+            }, {
+                "name": "disputedTransactionID",
+                "type": "bytes32"
+            }, {
+                "name": "disputedBusinessTransactionIDs",
+                "type": "bytes32[]"
+            }, {
+                "name": "reasonCode",
+                "type": "string"
+            }],
+            "name": "submitDispute",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "stateValues",
+                "type": "uint256[]"
+            }],
+            "name": "filterDisputesByState",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "submittedDateStart",
+                "type": "uint256"
+            }, {
+                "name": "submittedDateEnd",
+                "type": "uint256"
+            }, {
+                "name": "closedDateStart",
+                "type": "uint256"
+            }, {
+                "name": "closedDateEnd",
+                "type": "uint256"
+            }, {
+                "name": "stateValues",
+                "type": "uint256[]"
+            }, {
+                "name": "reasonValues",
+                "type": "uint256[]"
+            }],
+            "name": "findDisputes",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [],
+            "name": "getOrchestrator",
+            "outputs": [{
+                "name": "",
+                "type": "address"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputedBusinessTransactionIds",
+                "type": "bytes32[]"
+            }],
+            "name": "filterDisputesByDisputedBusinessTransactionIDs",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "id",
+                "type": "bytes32"
+            }],
+            "name": "verify",
+            "outputs": [{
+                "name": "",
+                "type": "bool"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": false,
+            "inputs": [{
+                "name": "valInMinute",
+                "type": "uint256"
+            }],
+            "name": "setDisputeSubmissionWindowInMinutes",
+            "outputs": [],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [],
+            "name": "getDisputIDs",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [],
+            "name": "getDisputeSubmissionWindowInMinutes",
+            "outputs": [{
+                "name": "",
+                "type": "uint256"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputingPartys",
+                "type": "address[]"
+            }],
+            "name": "filterDisputesByDisputingParty",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputedTransactionIDs",
+                "type": "bytes32[]"
+            }],
+            "name": "filterDisputesByDisputedTransactionIDs",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "inputs": [],
+            "payable": false,
+            "type": "constructor"
+        }];
 
-        config.fromAddress = web3.eth.accounts.privateKeyToAccount(config.privateKey).address;
+        if (!config.fromAddress) {
+            if (config.privateKey) {
+                config.fromAddress = web3.eth.accounts.privateKeyToAccount(config.privateKey).address;
+            } else {
+                //read-only access
+                config.fromAddress = '0x0000000000000000000000000000000000000000';
+            }
+        }
         var contentContract = new web3.eth.Contract(abi, config.contentBackchainContractAddress, {
             from: config.fromAddress
         });
@@ -488,32 +480,51 @@ module.exports = {
         });
         return {
             config: config,
-            getDisputeCount: function() {
-                return disputeContract.methods.getDisputeCount().call().then(function(result) {
-                    return Promise.resolve(parseInt(result))
-                });
+            submitDispute: function(dispute) {
+                return disputeContract.methods.submitDispute(dispute.disputeID, dispute.disputePartyAddress, dispute.disputedTransactionID, dispute.disputedBusinessTransactionIDs, dispute.reasonCode).send();
             },
-            submitDispute: function(disputeID, disputePartyAddress, disputedTransactionID, disputedBusinessTransactionIDs, reasonCode) {
-                return disputeContract.methods.submitDispute(disputeID, disputePartyAddress, disputedTransactionID, disputedBusinessTransactionIDs, reasonCode).send();
-            },
-            findDispute: function(hash, disputeParty, disputedTransactionID, disputedBusinessTransactionIDs, submittedDateStart, submittedDateEnd, closedDateStart, closedDateEnd, stateValue, reasonValue) {
+            filterDisputes: function(disputeFilter) {
                 var arrayOfDisputes = [];
-                disputeContract.methods.findDispute(hash, disputeParty, disputedTransactionID, disputedBusinessTransactionIDs).call().then(function(disputeIDsHash) {
+                disputeContract.methods.findDispute(disputeFilter.ids, disputeFilter.disputePartys, disputeFilter.disputedTransactionIDs, disputeFilter.disputedBusinessTransactionIDs).call().then(function(disputeIDsHash) {
                     if (disputeIDsHash.length > 0) {
-                        disputeContract.methods.findDispute(disputeIDsHash, submittedDateStart, submittedDateEnd, closedDateStart, closedDateEnd, stateValue, reasonValue).call().then(function(hashArray) {
-                            if (hashArray.length > 0) {
-                                for (var i = 0; i < hashArray.length; i++) {
+                        stateArray = [];
+                        reasonArray = [];
+                        if (disputeFilter.states) {
+                            for (var i = 0; i < disputeFilter.states.length; i++) {
+                                switch (disputeFilter.states[i]) {
+                                    case "OPEN":
+                                        stateArray.push(0);
+                                        break;
+
+                                    case "CLOSED":
+                                        stateArray.push(1);
+                                        break;
+                                }
+                            }
+                        }
+                        if (disputeFilter.reasons) {
+                            for (var i = 0; i < disputeFilter.reasons.length; i++) {
+                                switch (disputeFilter.reasons[i]) {
+                                    case "INVALID":
+                                        reasonArray.push(0);
+                                        break;
+                                }
+                            }
+                        }
+                        disputeContract.methods.findDispute(disputeIDsHash, disputeFilter.submittedDateStart, disputeFilter.submittedDateEnd, disputeFilter.closedDateStart, cdisputeFilter.losedDateEnd, stateArray, reasonArray).call().then(function(disputeIds) {
+                            if (disputeIds.length > 0) {
+                                for (var i = 0; i < disputeIds.length; i++) {
                                     var dispute = {};
-                                    disputeContract.methods.getDisputeBasicDetail(hashArray[i]).call().then(function(disputeID, disputePartyAddress, disputedTransactionID, disputedBusinessTransactionIDs) {
-                                        dispute.disputeID = disputeID;
-                                        dispute.disputePartyAddress = disputePartyAddress;
-                                        dispute.disputedTransactionID = disputedTransactionID;
-                                        dispute.disputedBusinessTransactionIDs = disputedBusinessTransactionIDs;
-                                        getDisputedSummaryDetails(hashArray[i]).call.then(function(submittedDate, closedDate, state, reason) {
-                                            dispute.submittedDate = submittedDate;
-                                            dispute.closedDate = closedDate;
-                                            dispute.state = state;
-                                            dispute.reason = reason;
+                                    disputeContract.methods.getDisputeBasicDetail(disputeIds[i]).call().then(function(disputeBasic) {
+                                        dispute.disputeID = disputeIds[i];
+                                        dispute.disputePartyAddress = disputeBasic[0];
+                                        dispute.disputedTransactionID = disputeBasic[1];
+                                        dispute.disputedBusinessTransactionIDs = [2];
+                                        getDisputedSummaryDetails(disputeIds[i]).call.then(function(disputeSummary) {
+                                            dispute.submittedDate = disputeSummary[0];
+                                            dispute.closedDate = disputeSummary[1];
+                                            dispute.state = disputeSummary[2];
+                                            dispute.reason = disputeSummary[3];
                                             arrayOfDisputes.push(dispute)
                                         });
                                     });
@@ -524,30 +535,27 @@ module.exports = {
                 });
                 return arrayOfDisputes;
             },
-            verify: function(hash) {
-                return disputeContract.methods.verify(hash).call();
-            },
-            closeDispute: function(hash) {
-                disputeContract.methods.closeDispute(hash).call();
+            closeDispute: function(id) {
+                disputeContract.methods.closeDispute(id).send();
             },
             getDisputeSubmissionWindowInMinutes: function() {
                 return disputeContract.methods.getDisputeSubmissionWindowInMinutes().call();
             },
             setDisputeSubmissionWindowInMinutes: function(valueInMiniute) {
-                disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).call();
+                disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).send();
             },
-            getDispute: function(hash) {
+            getDispute: function(id) {
                 var dispute = {};
-                disputeContract.methods.getDisputeBasicDetail(hash).call().then(function(disputeID, disputePartyAddress, disputedTransactionID, disputedBusinessTransactionIDs) {
-                    dispute.disputeID = disputeID;
-                    dispute.disputePartyAddress = disputePartyAddress;
-                    dispute.disputedTransactionID = disputedTransactionID;
-                    dispute.disputedBusinessTransactionIDs = disputedBusinessTransactionIDs;
-                    getDisputedSummaryDetails(hash).call.then(function(submittedDate, closedDate, state, reason) {
-                        dispute.submittedDate = submittedDate;
-                        dispute.closedDate = closedDate;
-                        dispute.state = state;
-                        dispute.reason = reason;
+                disputeContract.methods.getDisputeBasicDetail(id).call().then(function(disputeBasicDetail) {
+                    dispute.disputeID = id;
+                    dispute.disputePartyAddress = disputeBasicDetail[0];
+                    dispute.disputedTransactionID = disputeBasicDetail[1];
+                    dispute.disputedBusinessTransactionIDs = disputeBasicDetail[2];
+                    getDisputedSummaryDetails(id).call.then(function(disputeSummary) {
+                        dispute.submittedDate = disputeSummary[0];
+                        dispute.closedDate = disputeSummary[1];
+                        dispute.state = disputeSummary[2];
+                        dispute.reason = disputeSummary[3];
                     });
                 });
                 return dispute;
