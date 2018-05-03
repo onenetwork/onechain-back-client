@@ -126,8 +126,7 @@ module.exports = {
                 return contract.methods.orchestrator().call();
             }
         };
-    };
-
+    },
     createDisputeBcClients: function(config) {
         if (config.blockchain != 'eth') {
             throw new Error('blockchain not supported: ' + config.blockchain);
@@ -138,39 +137,16 @@ module.exports = {
             web3 = config.web3;
         } else {
             web3 = new Web3(new Web3.providers.HttpProvider(config.url));
-
         }
 
         // Warning - this abi must be updated any time DisputeBackchain.sol changes
         var abi = [{
             "constant": true,
             "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputingPartys",
-                "type": "address[]"
-            }, {
-                "name": "disputedTransactionIDs",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputedBusinessTransactionIDs",
-                "type": "bytes32[]"
-            }],
-            "name": "findDisputes",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
                 "name": "id",
                 "type": "bytes32"
             }],
-            "name": "getDisputeBasicDetail",
+            "name": "getDisputeHeader",
             "outputs": [{
                 "name": "",
                 "type": "address"
@@ -186,42 +162,10 @@ module.exports = {
         }, {
             "constant": true,
             "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "reasonValue",
-                "type": "string"
-            }],
-            "name": "filterDisputesByReason",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "stateValue",
-                "type": "string"
-            }],
-            "name": "filterDisputesByState",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
                 "name": "id",
                 "type": "bytes32"
             }],
-            "name": "getDisputedSummaryDetails",
+            "name": "getDisputeDetail",
             "outputs": [{
                 "name": "",
                 "type": "uint256"
@@ -328,37 +272,6 @@ module.exports = {
             "type": "function"
         }, {
             "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "submittedDateStart",
-                "type": "uint256"
-            }, {
-                "name": "submittedDateEnd",
-                "type": "uint256"
-            }, {
-                "name": "closedDateStart",
-                "type": "uint256"
-            }, {
-                "name": "closedDateEnd",
-                "type": "uint256"
-            }, {
-                "name": "stateValues",
-                "type": "uint256[]"
-            }, {
-                "name": "reasonValues",
-                "type": "uint256[]"
-            }],
-            "name": "findDisputes",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
             "inputs": [],
             "name": "getOrchestrator",
             "outputs": [{
@@ -384,19 +297,6 @@ module.exports = {
             "payable": false,
             "type": "function"
         }, {
-            "constant": true,
-            "inputs": [{
-                "name": "id",
-                "type": "bytes32"
-            }],
-            "name": "verify",
-            "outputs": [{
-                "name": "",
-                "type": "bool"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
             "constant": false,
             "inputs": [{
                 "name": "valInMinute",
@@ -408,8 +308,29 @@ module.exports = {
             "type": "function"
         }, {
             "constant": true,
-            "inputs": [],
-            "name": "getDisputIDs",
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "submittedDateStart",
+                "type": "uint256"
+            }, {
+                "name": "submittedDateEnd",
+                "type": "uint256"
+            }, {
+                "name": "closedDateStart",
+                "type": "uint256"
+            }, {
+                "name": "closedDateEnd",
+                "type": "uint256"
+            }, {
+                "name": "stateValues",
+                "type": "uint256[]"
+            }, {
+                "name": "reasonValues",
+                "type": "uint256[]"
+            }],
+            "name": "filterDisputeByDetail",
             "outputs": [{
                 "name": "",
                 "type": "bytes32[]"
@@ -432,7 +353,29 @@ module.exports = {
                 "name": "ids",
                 "type": "bytes32[]"
             }, {
-                "name": "disputingPartys",
+                "name": "disputingParties",
+                "type": "address[]"
+            }, {
+                "name": "disputedTransactionIDs",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputedBusinessTransactionIDs",
+                "type": "bytes32[]"
+            }],
+            "name": "filterDisputeByHeaders",
+            "outputs": [{
+                "name": "",
+                "type": "bytes32[]"
+            }],
+            "payable": false,
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "ids",
+                "type": "bytes32[]"
+            }, {
+                "name": "disputingParties",
                 "type": "address[]"
             }],
             "name": "filterDisputesByDisputingParty",
@@ -481,11 +424,11 @@ module.exports = {
         return {
             config: config,
             submitDispute: function(dispute) {
-                return disputeContract.methods.submitDispute(dispute.disputeID, dispute.disputePartyAddress, dispute.disputedTransactionID, dispute.disputedBusinessTransactionIDs, dispute.reasonCode).send();
+                return disputeContract.methods.submitDispute(dispute.disputeID, dispute.disputeParty, dispute.disputedTransactionID, dispute.disputedBusinessTransactionIDs, dispute.reason).send();
             },
             filterDisputes: function(disputeFilter) {
                 var arrayOfDisputes = [];
-                disputeContract.methods.findDispute(disputeFilter.ids, disputeFilter.disputePartys, disputeFilter.disputedTransactionIDs, disputeFilter.disputedBusinessTransactionIDs).call().then(function(disputeIDsHash) {
+                disputeContract.methods.filterDisputeByHeaders(disputeFilter.ids, disputeFilter.disputePartys, disputeFilter.disputedTransactionIDs, disputeFilter.disputedBusinessTransactionIDs).call().then(function(disputeIDsHash) {
                     if (disputeIDsHash.length > 0) {
                         stateArray = [];
                         reasonArray = [];
@@ -511,20 +454,20 @@ module.exports = {
                                 }
                             }
                         }
-                        disputeContract.methods.findDispute(disputeIDsHash, disputeFilter.submittedDateStart, disputeFilter.submittedDateEnd, disputeFilter.closedDateStart, cdisputeFilter.losedDateEnd, stateArray, reasonArray).call().then(function(disputeIds) {
+                        disputeContract.methods.filterDisputeByDetail(disputeIDsHash, disputeFilter.submittedDateStart, disputeFilter.submittedDateEnd, disputeFilter.closedDateStart, cdisputeFilter.losedDateEnd, stateArray, reasonArray).call().then(function(disputeIds) {
                             if (disputeIds.length > 0) {
                                 for (var i = 0; i < disputeIds.length; i++) {
                                     var dispute = {};
-                                    disputeContract.methods.getDisputeBasicDetail(disputeIds[i]).call().then(function(disputeBasic) {
+                                    disputeContract.methods.getDisputeHeader(disputeIds[i]).call().then(function(disputeHeaders) {
                                         dispute.disputeID = disputeIds[i];
-                                        dispute.disputePartyAddress = disputeBasic[0];
-                                        dispute.disputedTransactionID = disputeBasic[1];
-                                        dispute.disputedBusinessTransactionIDs = [2];
-                                        getDisputedSummaryDetails(disputeIds[i]).call.then(function(disputeSummary) {
-                                            dispute.submittedDate = disputeSummary[0];
-                                            dispute.closedDate = disputeSummary[1];
-                                            dispute.state = disputeSummary[2];
-                                            dispute.reason = disputeSummary[3];
+                                        dispute.disputeParty = disputeHeaders[0];
+                                        dispute.disputedTransactionID = disputeHeaders[1];
+                                        dispute.disputedBusinessTransactionIDs = disputeHeaders[2];
+                                        disputeContract.methods.getDisputedSummaryDetails(disputeIds[i]).call.then(function(disputeDetails) {
+                                            dispute.submittedDate = disputeDetails[0];
+                                            dispute.closedDate = disputeDetails[1];
+                                            dispute.state = disputeDetails[2];
+                                            dispute.reason = disputeDetails[3];
                                             arrayOfDisputes.push(dispute)
                                         });
                                     });
@@ -546,16 +489,16 @@ module.exports = {
             },
             getDispute: function(id) {
                 var dispute = {};
-                disputeContract.methods.getDisputeBasicDetail(id).call().then(function(disputeBasicDetail) {
+                disputeContract.methods.getDisputeHeader(id).call().then(function(disputeHeaders) {
                     dispute.disputeID = id;
-                    dispute.disputePartyAddress = disputeBasicDetail[0];
-                    dispute.disputedTransactionID = disputeBasicDetail[1];
-                    dispute.disputedBusinessTransactionIDs = disputeBasicDetail[2];
-                    getDisputedSummaryDetails(id).call.then(function(disputeSummary) {
-                        dispute.submittedDate = disputeSummary[0];
-                        dispute.closedDate = disputeSummary[1];
-                        dispute.state = disputeSummary[2];
-                        dispute.reason = disputeSummary[3];
+                    dispute.disputePartyAddress = disputeHeaders[0];
+                    dispute.disputedTransactionID = disputeHeaders[1];
+                    dispute.disputedBusinessTransactionIDs = disputeHeaders[2];
+                    disputeContract.methods.getDisputeDetail(id).call.then(function(disputeDetails) {
+                        dispute.submittedDate = disputeDetails[0];
+                        dispute.closedDate = disputeDetails[1];
+                        dispute.state = disputeDetails[2];
+                        dispute.reason = disputeDetails[3];
                     });
                 });
                 return dispute;
@@ -564,5 +507,5 @@ module.exports = {
                 return disputeContract.methods.orchestrator().call();
             }
         };
-    };
+    }
 };
