@@ -128,11 +128,10 @@ module.exports = {
             }
         };
     },
-    createDisputeBcClients: function(config) {
+    createDisputeBcClient: function(config) {
         if (config.blockchain != 'eth') {
             throw new Error('blockchain not supported: ' + config.blockchain);
         }
-
         var web3;
         if (config.web3Provider !== undefined) {
             web3 = new Web3(config.web3Provider);
@@ -423,10 +422,11 @@ module.exports = {
         var disputeContract = new web3.eth.Contract(abi, config.disputeBackchainContractAddress, {
             from: config.fromAddress
         });
+
         return {
             config: config,
             submitDispute: function(dispute) {
-                return disputeContract.methods.submitDispute(dispute.disputeID, dispute.disputeParty, dispute.disputedTransactionID, dispute.disputedBusinessTransactionIDs, dispute.reason).send();
+                disputeContract.methods.submitDispute(dispute.disputeID, dispute.disputeParty, dispute.disputedTransactionID, dispute.disputedBusinessTransactionIDs, dispute.reason).send();
             },
             filterDisputes: function(disputeFilter) {
                 var arrayOfDisputes = [];
@@ -506,7 +506,7 @@ module.exports = {
                 return dispute;
             },
             getOrchestrator: function() {
-                return disputeContract.methods.orchestrator().call();
+                return disputeContract.methods.getOrchestrator().call();
             }
         };
     }
