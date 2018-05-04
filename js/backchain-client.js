@@ -13,9 +13,10 @@ module.exports = {
             throw new Error('blockchain not supported: ' + config.blockchain);
         }
         var web3;
-        if (config.web3 !== undefined) {
-            web3 = config.web3;
-        } else {
+        if (config.web3Provider !== undefined) {
+            web3 = new Web3(config.web3Provider);
+        } 
+		else {
             web3 = new Web3(new Web3.providers.HttpProvider(config.url));
         }
 
@@ -133,9 +134,10 @@ module.exports = {
         }
 
         var web3;
-        if (config.web3 !== undefined) {
-            web3 = config.web3;
-        } else {
+        if (config.web3Provider !== undefined) {
+            web3 = new Web3(config.web3Provider);
+        } 
+		else {
             web3 = new Web3(new Web3.providers.HttpProvider(config.url));
         }
 
