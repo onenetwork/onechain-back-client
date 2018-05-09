@@ -443,7 +443,7 @@ module.exports = {
                 return disputeContract.methods.getDisputeSubmissionWindowInMinutes().call();
             },
             setDisputeSubmissionWindowInMinutes: function(valueInMiniute) {
-                disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).send();
+                return disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).send();
             },
             getDispute: function(disputeIDHash) {
                 var dispute = {};
