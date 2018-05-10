@@ -103,27 +103,27 @@ module.exports = {
                 config.fromAddress = '0x0000000000000000000000000000000000000000';
             }
         }
-        var contract = new web3.eth.Contract(abi, config.contractAddress, {
+        var contentContract = new web3.eth.Contract(abi, config.contentBackchainContractAddress, {
             from: config.fromAddress
         });
         return {
             config: config,
             hashCount: function() {
-                return contract.methods.hashCount().call().then(function(result) {
+                return contentContract.methods.hashCount().call().then(function(result) {
                     return Promise.resolve(parseInt(result))
                 });
             },
             post: function(hash) {
-                return contract.methods.post(hash).send();
+                return contentContract.methods.post(hash).send();
             },
             verify: function(hash) {
-                return contract.methods.verify(hash).call();
+                return contentContract.methods.verify(hash).call();
             },
             getHash: function(index) {
-                return contract.methods.getHash(index).call();
+                return contentContract.methods.getHash(index).call();
             },
             getOrchestrator: function() {
-                return contract.methods.orchestrator().call();
+                return contentContract.methods.orchestrator().call();
             }
         };
     },
@@ -414,9 +414,6 @@ module.exports = {
                 config.fromAddress = '0x0000000000000000000000000000000000000000';
             }
         }
-        var contentContract = new web3.eth.Contract(abi, config.contentBackchainContractAddress, {
-            from: config.fromAddress
-        });
         var disputeContract = new web3.eth.Contract(abi, config.disputeBackchainContractAddress, {
             from: config.fromAddress,
             gas: 1000000
