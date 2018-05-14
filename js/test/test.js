@@ -11,7 +11,7 @@ var sampleHash1 = newHash();
 var config = {
     blockchain: 'eth',
     url: 'http://localhost:8545',
-    contentBackchainContractAddress: "0x4a6886a515a4b800f4591a6d6a60e6004a3645ab",
+    contentBackchainContractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138",
     disputeBackchainContractAddress: "0x4a6886a515a4b800f4591a6d6a60e6004a3645ab",
     privateKey: "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
 };

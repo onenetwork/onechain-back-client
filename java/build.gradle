@@ -49,21 +49,45 @@ task initWeb3jCLI(dependsOn: init) {
   }
 }
 
-task generateContractWrapper(type: Exec, dependsOn: initWeb3jCLI) {
-  description 'Generates java classes representing the Backchain smart contract'
+task generateContractBackchainWrapper(type: Exec, dependsOn: initWeb3jCLI) {
+  description 'Generates java classes representing the ContractBackchain smart contract'
   group 'Ethereum'
   workingDir '.'
-  commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '../BackchainABI.bin', '../BackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+  if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+    commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '../ContentBackchainABI.bin', '../ContentBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+  }
+  else {
+    commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '../ContentBackchainABI.bin', '../ContentBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+  }
   doLast {
-    ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/BackchainABI.java', match: 'public final class BackchainABI', replace: 'class BackchainABI')
+    ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/ContentBackchainABI.java', match: 'public final class ContentBackchainABI', replace: 'class ContentBackchainABI')
   }
   onlyIf {
-    !file("./build/gen-src/com/onenetwork/backchain/client/eth/BackchainABI.java").exists() 
+    !file("./build/gen-src/com/onenetwork/backchain/client/eth/ContentBackchainABI.java").exists() 
+  }
+}
+
+task generateDisputeBackchainWrapper(type: Exec, dependsOn: initWeb3jCLI) {
+  description 'Generates java classes representing the DisputeBackchain smart contract'
+  group 'Ethereum'
+  workingDir '.'
+  if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+      commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '../DisputeBackchainABI.bin', '../DisputeBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+  }
+  else {
+      commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '../DisputeBackchainABI.bin', '../DisputeBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+  }
+  doLast {
+    ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/DisputeBackchainABI.java', match: 'public final class DisputeBackchainABI', replace: 'class DisputeBackchainABI')
+  }
+  onlyIf {
+    !file("./build/gen-src/com/onenetwork/backchain/client/eth/DisputeBackchainABI.java").exists() 
   }
 }
 
 compileJava {
-  dependsOn generateContractWrapper
+  dependsOn generateContractBackchainWrapper
+  dependsOn generateDisputeBackchainWrapper
   source += sourceSets.generated.java
 }
 

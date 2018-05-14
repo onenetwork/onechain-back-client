@@ -11,7 +11,8 @@ import com.onenetwork.backchain.client.BackchainClientConfig;
 public class EthereumConfig implements BackchainClientConfig {
 
 	private String url;
-	private String contractAddress;
+	private String contentBackchainContractAddress;
+	private String disputeBackchainContractAddress;
 	private String privateKey;
 	private BigInteger gasPrice = BigInteger.valueOf(0);
 	private BigInteger gasLimit = BigInteger.valueOf(0);
@@ -35,24 +36,44 @@ public class EthereumConfig implements BackchainClientConfig {
 	}
 
 	/**
-	 * Returns the Ethereum smart contract address, as a base64-encoded string
+	 * Returns the Ethereum smart contract address of ContentBackchain, as a base64-encoded string
 	 * starting with "0x".  For example, "0xc5d4b021858a17828532e484b915149af5e1b138"
 	 * @return Ethereum smart contract address, as a base64-encoded string starting with "0x"
 	 */
-	public String getContractAddress() {
-		return contractAddress;
+	public String getContentBackchainContractAddress() {
+		return contentBackchainContractAddress;
 	}
 
 	/**
-	 * Sets the Ethereum smart contract address.  Expects a base64-encoded string
+	 * Sets the Ethereum smart contract address for ContentBackchain.  Expects a base64-encoded string
 	 * starting with "0x".  For example, "0xc5d4b021858a17828532e484b915149af5e1b138"
 	 * @param contractAddress base64-encoded string starting with "0x", for example, "0xc5d4b021858a17828532e484b915149af5e1b138"
 	 * @return this config object
 	 */
-	public EthereumConfig setContractAddress(String contractAddress) {
-		this.contractAddress = contractAddress;
+	public EthereumConfig setContentBackchainContractAddress(String contentBackchainContractAddress) {
+		this.contentBackchainContractAddress = contentBackchainContractAddress;
 		return this;
 	}
+
+  /**
+   * Returns the Ethereum smart contract address of DisputeBackchain, as a base64-encoded string
+   * starting with "0x".  For example, "0xc5d4b021858a17828532e484b915149af5e1b138"
+   * @return Ethereum smart contract address, as a base64-encoded string starting with "0x"
+   */
+  public String getDisputeBackchainContractAddress() {
+    return disputeBackchainContractAddress;
+  }
+
+  /**
+   * Sets the Ethereum smart contract address for DisputeBackchain.  Expects a base64-encoded string
+   * starting with "0x".  For example, "0xc5d4b021858a17828532e484b915149af5e1b138"
+   * @param contractAddress base64-encoded string starting with "0x", for example, "0xc5d4b021858a17828532e484b915149af5e1b138"
+   * @return this config object
+   */
+  public EthereumConfig setDisputeBackchainContractAddress(String disputeBackchainContractAddress) {
+    this.disputeBackchainContractAddress = disputeBackchainContractAddress;
+    return this;
+  }
 
 	/**
 	 * Returns the private key of the Ethereum client, as a base64-encoded string

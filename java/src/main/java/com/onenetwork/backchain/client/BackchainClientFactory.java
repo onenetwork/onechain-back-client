@@ -1,7 +1,7 @@
 package com.onenetwork.backchain.client;
 
-import com.onenetwork.backchain.client.eth.EthereumClient;
 import com.onenetwork.backchain.client.eth.EthereumConfig;
+import com.onenetwork.backchain.client.eth.EthereumContentBackchainClient;
 
 /**
  * Factory for acquiring instances of {@link BackchainClient}. You will need to
@@ -18,9 +18,9 @@ public class BackchainClientFactory {
 	 * @param config concrete implementation of {@link BackchainClientConfig} (for example {@link EthereumConfig})
 	 * @return suitable {@link BackchainClient} instance
 	 */
-	public static BackchainClient newBackchainClient(BackchainClientConfig config) {
+	public static ContentBackchainClient newContentBackchainClient(BackchainClientConfig config) {
 		if (config instanceof EthereumConfig) {
-			return new EthereumClient((EthereumConfig) config);
+			return new EthereumContentBackchainClient((EthereumConfig) config);
 		}
 
 		throw new IllegalArgumentException("Unsupported configuration: " + config);
