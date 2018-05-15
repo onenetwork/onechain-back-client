@@ -461,7 +461,10 @@ module.exports = {
             getOrchestrator: function() {
                 return disputeContract.methods.getOrchestrator().call();
             },
-            filterDisputes: function(disputeFilter) {
+			getFilterDisputeIDs(disputeFilter) {
+				if(disputeFilter === undefined) {
+					disputeFilter = {};
+				}
                 if (disputeFilter.disputeIDs === undefined) {
                     disputeFilter.disputeIDs = [];
                 }
@@ -476,7 +479,7 @@ module.exports = {
                 }
                 return disputeContract.methods.filterDisputeByHeaders(disputeFilter.disputeIDs, disputeFilter.disputingParties, disputeFilter.disputedTransactionIDs, disputeFilter.disputedBusinessTransactionIDs).call().then(function(disputeIDsHash) {
                     if (disputeIDsHash.length <= 0) {
-                        return [];
+                        return Promise.resolve([]);
                     }
                     if (disputeFilter.submittedDateStart === undefined) {
                         disputeFilter.submittedDateStart = 0;
@@ -535,9 +538,17 @@ module.exports = {
                         }
                     }
                     return disputeContract.methods.filterDisputeByDetail(disputeIDsHash, disputeFilter.submittedDateStart, disputeFilter.submittedDateEnd, disputeFilter.closedDateStart, disputeFilter.closedDateEnd, stateArray, reasonArray).call();
-                }).then(function(disputeIds) {
-                    if (disputeIds.length <= 0) {
-                        return Promise.resolve(disputeIds);
+                });
+			},
+			getDisputeCount: function(disputeFilter) {
+				return this.getFilterDisputeIDs(disputeFilter).then(function(disputeIDs){
+					return Promise.resolve(disputeIDs.length);
+				});
+			},
+            filterDisputes: function(disputeFilter) {
+				return this.getFilterDisputeIDs(disputeFilter).then(function(disputeIDs){
+                    if (disputeIDs.length <= 0) {
+                        return Promise.resolve([]);
                     }
                     var arrayOfDisputePromises = [];
                     var disputePromiseFn = function(disputeId) {
@@ -559,8 +570,8 @@ module.exports = {
                         });
 
                     };
-                    for (var i = 0; i < disputeIds.length; i++) {
-                        arrayOfDisputePromises.push(disputePromiseFn(disputeIds[i]));
+                    for (var i = 0; i < disputeIDs.length; i++) {
+                        arrayOfDisputePromises.push(disputePromiseFn(disputeIDs[i]));
                     }
                     return Promise.all(arrayOfDisputePromises);
                 });

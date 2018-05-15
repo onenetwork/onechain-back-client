@@ -95,8 +95,11 @@ describe('disputeBackchain-client', function() {
                 var disputeFilter = {reasons:["FINANCIAL_DISPUTED"]};
 				return disputeBC.filterDisputes(disputeFilter);
             }).then(function(disputes) {
-
-            });
+				var disputeFilter = {disputeIDs:[sampleHash1]};
+			   return disputeBC.getDisputeCount(disputeFilter);
+            }).then(function(count){
+				expect(count).to.equal(1);
+			});
         });
     });
 });
