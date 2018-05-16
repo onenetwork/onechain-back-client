@@ -418,23 +418,95 @@ module.exports = {
             from: config.fromAddress,
             gas: 1000000
         });
-
+		
+		// private functions		
+		var isArray = function(obj) {
+			return Object.prototype.toString.call(obj) === '[object Array]';
+		};
+		
+		var isEmpty = function(obj){
+			return  obj === null || obj === undefined || ((isArray(obj) && obj.length <= 0)) || ( typeof obj === 'string' && obj.trim().length <= 0);
+		};
+		
+		var isValidReasonCode = function(reason){
+			switch (reason) {
+				case "HASH_NOT_FOUND":
+				case "INPUT_DISPUTED":
+				case "TRANSACTION_DATE_DISPUTED":
+				case "TRANSACTION_PARTIES_DISPUTED":
+				case "DISPUTE_BUSINESS_TRANSACTIONS":
+				case "FINANCIAL_DISPUTED":
+					return true;
+			}
+			return false;
+		};
+		
+		var convertStringToByte = function(paramString) {
+			return  paramString.indexOf('0x') !== 0 ? '0x' + paramString : paramString;
+		};
+		
+		var convertByteToString = function(paramBytes) {
+			return paramBytes.indexOf('0x') === 0 ? paramBytes.substring(2) : paramBytes;
+		};
+		
+		var convertByteArrayToStringArray = function(byteArray) {
+			var returnStringArray = [];
+			if(!isEmpty(byteArray) && isArray(byteArray)) { 
+				for(var i = 0; i < byteArray.length; i++) {
+					returnStringArray.push(convertByteToString(byteArray[i]))
+				}
+			}
+			return returnStringArray;
+		};
+		
+		var convertStringArrayToByteArray = function (stringArray) {
+			var returnByteArray = [];
+			if(!isEmpty(stringArray) && isArray(stringArray)) {
+				for(var i = 0; i < stringArray.length; i++) {
+					returnByteArray.push(convertStringToByte(stringArray[i]))
+				}
+			}
+			return returnByteArray;
+			
+		};
+		
+		var convertProps = function(obj, isConvertToBytes){
+			var arrayObj = [];
+			if (isEmpty(obj)) {
+				return arrayObj;
+			}
+			else if(!isArray(obj)) {
+				arrayObj.push(obj);
+			}
+			return isConvertToBytes? convertStringArrayToByteArray(arrayObj) : arrayObj;
+		};
+		
         return {
             config: config,
             submitDispute: function(dispute) {
-                if (dispute.disputingParty === undefined) {
-                    dispute.disputingParty = config.fromAddress;
+				var localDispute = JSON.parse(JSON.stringify(dispute));
+                if (isEmpty(localDispute.disputingParty)) {
+                    localDispute.disputingParty = config.fromAddress;
                 }
-                if (dispute.id === undefined) {
-                    dispute.id = '0x0000000000000000000000000000000000000000000000000000000000000000';
+				else if(convertStringToByte(config.fromAddress) === convertStringToByte(localDispute.disputingParty)) {
+					Promise.reject(new Error("Cannot submit dispute. DisputingParty does not match with creator address"));
+				}
+                if (isEmpty(localDispute.disputeId)) {
+                    localDispute.disputeId = '0x0000000000000000000000000000000000000000000000000000000000000000';
                 }
-                if (dispute.disputedBusinessTransactionIDs === undefined) {
-                    dispute.disputedBusinessTransactionIDs = [];
-                }
-                return disputeContract.methods.submitDispute(dispute.id, dispute.disputingParty, dispute.disputedTransactionID, dispute.disputedBusinessTransactionIDs, dispute.reason).send();
+				if(isEmpty(localDispute.disputedTransactionId)) {
+					return Promise.reject(new Error("disputedTransactionId is required. Cannot be null or empty" + localDispute.disputedTransactionId));
+				}
+				if(isEmpty(localDispute.reason)){
+					return Promise.reject(new Error("Reason is required. Cannot be null or empty"));			
+				}
+				if(!isValidReasonCode(localDispute.reason)){
+					return Promise.reject(new Error("Invalid Reason code :" + localDispute.reason + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));			
+				}
+                return disputeContract.methods.submitDispute(convertStringToByte(localDispute.disputeId), convertStringToByte(localDispute.disputingParty), convertStringToByte(localDispute.disputedTransactionId), convertStringArrayToByteArray(localDispute.disputedBusinessTransactionIds), localDispute.reason).send();
             },
             closeDispute: function(disputeIDHash) {
-                return disputeContract.methods.closeDispute(disputeIDHash).send();
+                return disputeContract.methods.closeDispute(convertStringToByte(disputeIDHash)).send();
             },
             getDisputeSubmissionWindowInMinutes: function() {
                 return disputeContract.methods.getDisputeSubmissionWindowInMinutes().call();
@@ -443,13 +515,16 @@ module.exports = {
                 return disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).send();
             },
             getDispute: function(disputeIDHash) {
+				if(isEmpty(disputeIDHash)) {
+					return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
+				}
                 var dispute = {};
-                return disputeContract.methods.getDisputeHeader(disputeIDHash).call().then(function(disputeHeaders) {
-                    dispute.disputeID = disputeIDHash;
+				dispute.disputeId = convertStringToByte(disputeIDHash);
+                return disputeContract.methods.getDisputeHeader(dispute.disputeId).call().then(function(disputeHeaders) {
                     dispute.disputingParty = disputeHeaders[0];
-                    dispute.disputedTransactionID = disputeHeaders[1];
-                    dispute.disputedBusinessTransactionIDs = disputeHeaders[2];
-                    return disputeContract.methods.getDisputeDetail(disputeIDHash).call();
+                    dispute.disputedTransactionId = disputeHeaders[1];
+                    dispute.disputedBusinessTransactionIds = disputeHeaders[2];
+                    return disputeContract.methods.getDisputeDetail(dispute.disputeId).call();
                 }).then(function(disputeDetails) {
                     dispute.submittedDate = disputeDetails[0];
                     dispute.closedDate = disputeDetails[1];
@@ -461,121 +536,102 @@ module.exports = {
             getOrchestrator: function() {
                 return disputeContract.methods.getOrchestrator().call();
             },
-			getFilterDisputeIDs(disputeFilter) {
-				if(disputeFilter === undefined) {
-					disputeFilter = {};
-				}
-                if (disputeFilter.disputeIDs === undefined) {
-                    disputeFilter.disputeIDs = [];
-                }
-                if (disputeFilter.disputingParties === undefined) {
-                    disputeFilter.disputingParties = [];
-                }
-                if (disputeFilter.disputedTransactionIDs === undefined) {
-                    disputeFilter.disputedTransactionIDs = [];
-                }
-                if (disputeFilter.disputedBusinessTransactionIDs === undefined) {
-                    disputeFilter.disputedBusinessTransactionIDs = [];
-                }
-                return disputeContract.methods.filterDisputeByHeaders(disputeFilter.disputeIDs, disputeFilter.disputingParties, disputeFilter.disputedTransactionIDs, disputeFilter.disputedBusinessTransactionIDs).call().then(function(disputeIDsHash) {
+			getFilterDisputeIds(disputeFilter) {
+				var filter = JSON.parse(JSON.stringify(disputeFilter));	
+				filter.disputeId = convertProps(filter.disputeId, true);
+				filter.disputingParty = convertProps(filter.disputingParty, true);
+				filter.disputedTransactionId = convertProps(filter.disputedTransactionId, true);
+				filter.disputedBusinessTransactionIds = convertProps(filter.disputedBusinessTransactionIds, true);
+                return disputeContract.methods.filterDisputeByHeaders(filter.disputeId, filter.disputingParty, filter.disputedTransactionId, filter.disputedBusinessTransactionIds).call().then(function(disputeIDsHash) {
                     if (disputeIDsHash.length <= 0) {
                         return Promise.resolve([]);
                     }
-                    if (disputeFilter.submittedDateStart === undefined) {
-                        disputeFilter.submittedDateStart = 0;
+                    if (isEmpty(filter.submittedDateStart)) {
+                        filter.submittedDateStart = 0;
                     }
-                    if (disputeFilter.submittedDateEnd === undefined) {
-                        disputeFilter.submittedDateEnd = 0;
+                    if (isEmpty(filter.submittedDateEnd)) {
+                        filter.submittedDateEnd = 0;
                     }
-                    if (disputeFilter.closedDateStart === undefined) {
-                        disputeFilter.closedDateStart = 0;
+                    if (isEmpty(filter.closedDateStart)) {
+                        filter.closedDateStart = 0;
                     }
-                    if (disputeFilter.closedDateEnd === undefined) {
-                        disputeFilter.closedDateEnd = 0;
+                    if (isEmpty(filter.closedDateEnd)) {
+                        filter.closedDateEnd = 0;
                     }
                     var stateArray = [];
-                    if (disputeFilter.states) {
-                        for (var i = 0; i < disputeFilter.states.length; i++) {
-                            switch (disputeFilter.states[i]) {
-                                case "OPEN":
-                                    stateArray.push(0);
-                                    break;
+					filter.state = convertProps(filter.state, false);
+					for (var i = 0; i < filter.state.length; i++) {
+						switch (filter.state[i]) {
+							case "OPEN":
+								stateArray.push(0);
+								break;
 
-                                case "CLOSED":
-                                    stateArray.push(1);
-                                    break;
-                            }
-                        }
-                    }
+							case "CLOSED":
+								stateArray.push(1);
+								break;
+							
+							default:
+							 return Promise.reject(new Error("Invalid State code :" + filter.states[i] + " valid states are [OPEN, CLOSED]"));
+						}
+					}
                     var reasonArray = [];
-                    if (disputeFilter.reasons) {
-                        for (var i = 0; i < disputeFilter.reasons.length; i++) {
-                            switch (disputeFilter.reasons[i]) {
-                                case "HASH_NOT_FOUND":
-                                    reasonArray.push(0);
-                                    break;
+					filter.reason = convertProps(filter.reason, false);
+					for (var i = 0; i < filter.reason.length; i++) {
+						switch (filter.reason[i]) {
+							case "HASH_NOT_FOUND":
+								reasonArray.push(0);
+								break;
 
-                                case "INPUT_DISPUTED":
-                                    reasonArray.push(1);
-                                    break;
+							case "INPUT_DISPUTED":
+								reasonArray.push(1);
+								break;
 
-                                case "TRANSACTION_DATE_DISPUTED":
-                                    reasonArray.push(2);
-                                    break;
+							case "TRANSACTION_DATE_DISPUTED":
+								reasonArray.push(2);
+								break;
 
-                                case "TRANSACTION_PARTIES_DISPUTED":
-                                    reasonArray.push(3);
-                                    break;
+							case "TRANSACTION_PARTIES_DISPUTED":
+								reasonArray.push(3);
+								break;
 
-                                case "DISPUTE_BUSINESS_TRANSACTIONS":
-                                    reasonArray.push(4);
-                                    break;
+							case "DISPUTE_BUSINESS_TRANSACTIONS":
+								reasonArray.push(4);
+								break;
 
-                                case "FINANCIAL_DISPUTED":
-                                    reasonArray.push(5);
-                                    break;
-                            }
-                        }
-                    }
-                    return disputeContract.methods.filterDisputeByDetail(disputeIDsHash, disputeFilter.submittedDateStart, disputeFilter.submittedDateEnd, disputeFilter.closedDateStart, disputeFilter.closedDateEnd, stateArray, reasonArray).call();
+							case "FINANCIAL_DISPUTED":
+								reasonArray.push(5);
+								break;
+								
+							default:
+							 return Promise.reject(new Error("Invalid Reason code :" + filter.reasons[i] + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));
+						}
+					}
+                    return disputeContract.methods.filterDisputeByDetail(disputeIDsHash, filter.submittedDateStart, filter.submittedDateEnd, filter.closedDateStart, filter.closedDateEnd, stateArray, reasonArray).call();
                 });
 			},
 			getDisputeCount: function(disputeFilter) {
-				return this.getFilterDisputeIDs(disputeFilter).then(function(disputeIDs){
-					return Promise.resolve(disputeIDs.length);
+				return this.getFilterDisputeIds(disputeFilter).then(function(disputeIds){
+					return Promise.resolve(disputeIds.length);
 				});
 			},
             filterDisputes: function(disputeFilter) {
-				return this.getFilterDisputeIDs(disputeFilter).then(function(disputeIDs){
-                    if (disputeIDs.length <= 0) {
+				var me = this;
+				return this.getFilterDisputeIds(disputeFilter).then(function(disputeIds){
+                    if (disputeIds.length <= 0) {
                         return Promise.resolve([]);
                     }
                     var arrayOfDisputePromises = [];
                     var disputePromiseFn = function(disputeId) {
                         return new Promise((resolve) => {
-                            var dispute = {};
-                            return disputeContract.methods.getDisputeHeader(disputeId).call().then(function(disputeHeaders) {
-                                dispute.disputeID = disputeId;
-                                dispute.disputingParty = disputeHeaders[0];
-                                dispute.disputedTransactionID = disputeHeaders[1];
-                                dispute.disputedBusinessTransactionIDs = disputeHeaders[2];
-                                return disputeContract.methods.getDisputeDetail(disputeId).call();
-                            }).then(function(disputeDetails) {
-                                dispute.submittedDate = disputeDetails[0];
-                                dispute.closedDate = disputeDetails[1];
-                                dispute.state = disputeDetails[2];
-                                dispute.reason = disputeDetails[3];
-                                resolve(dispute);
-                            });
+                            resolve(me.getDispute(disputeId));
                         });
-
                     };
-                    for (var i = 0; i < disputeIDs.length; i++) {
-                        arrayOfDisputePromises.push(disputePromiseFn(disputeIDs[i]));
+                    for (var i = 0; i < disputeIds.length; i++) {
+                        arrayOfDisputePromises.push(disputePromiseFn(disputeIds[i]));
                     }
                     return Promise.all(arrayOfDisputePromises);
                 });
             }
         };
     }
-};
+}

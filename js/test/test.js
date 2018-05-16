@@ -7,6 +7,7 @@ function newHash() {
 }
 var sampleHash = newHash();
 var sampleHash1 = newHash();
+var sampleHashString = sampleHash1.substring(2);
 
 var config = {
     blockchain: 'eth',
@@ -49,7 +50,7 @@ describe('backchain-client', function() {
             }).then(function(orchestrator) {
                 expect(orchestrator.toUpperCase()).to.equal(bc.config.fromAddress.toUpperCase());
             });
-        });
+        }); 
 
     });
 
@@ -62,10 +63,9 @@ describe('disputeBackchain-client', function() {
             disputeBC.getOrchestrator().then(function(orchestrator) {
                 expect(orchestrator.toUpperCase()).to.equal(disputeBC.config.fromAddress.toUpperCase());
                 var dispute = {
-                    id: sampleHash1,
-                    disputeParty: disputeBC.config.fromAddress,
-                    disputedTransactionID: "0xc5d4b021858a17828532e484b915149af5e1b138",
-           
+                    disputeId: sampleHashString,
+                    disputingParty: disputeBC.config.fromAddress,
+                    disputedTransactionId: "0xc5d4b021858a17828532e484b915149af5e1b138",
                     reason: "TRANSACTION_PARTIES_DISPUTED"
                 };
                 return disputeBC.submitDispute(dispute);
@@ -75,30 +75,42 @@ describe('disputeBackchain-client', function() {
             }).then(function(disputes) {
                 var isFound = false;
                 for (var i = 0; i < disputes.length; i++) {
-                    if (disputes[i].disputeID === sampleHash1) {
+                    if (disputes[i].disputeId === sampleHash1) {
                         isFound = true;
                         break;
                     }
                 }
                 expect(isFound).to.be.true;
-                return disputeBC.closeDispute(sampleHash1);
+                return disputeBC.closeDispute(sampleHashString);
             }).then(function() {
-                return disputeBC.getDispute(sampleHash1);
+                return disputeBC.getDispute(sampleHashString);
             }).then(function(dispute) {
                 expect(dispute.state).to.equal("CLOSED");
                 var dispute = {
-                    disputedTransactionID: "0xc5d4b021858a17828532e484b915149af5e1b133",
+                    disputedTransactionId: "0xc5d4b021858a17828532e484b915149af5e1b133",
                     reason: "FINANCIAL_DISPUTED"
                 };
                 return disputeBC.submitDispute(dispute);
             }).then(function() {
-                var disputeFilter = {reasons:["FINANCIAL_DISPUTED"]};
+                var disputeFilter = {reason:["FINANCIAL_DISPUTED"]};
 				return disputeBC.filterDisputes(disputeFilter);
             }).then(function(disputes) {
-				var disputeFilter = {disputeIDs:[sampleHash1]};
+				var disputeFilter = {disputeId:sampleHashString};
 			   return disputeBC.getDisputeCount(disputeFilter);
             }).then(function(count){
 				expect(count).to.equal(1);
+				var dispute = {
+                    disputedTransactionId: "0xc5d4b021858a17828532e484b915149af5e1b133",
+                    reason: "FINANCIAL_DISPUTED",
+					disputingParty: '0x0000000000000000001'
+                };
+                return disputeBC.submitDispute(dispute);
+			}).then(function(){
+				return Promise.reject("Exception anticipated");
+			}).catch(function(reason) {
+				if ((reason.message || reason).indexOf("DisputingParty") > -1) {
+					assert.fail(reason.message);
+				}
 			});
         });
     });
