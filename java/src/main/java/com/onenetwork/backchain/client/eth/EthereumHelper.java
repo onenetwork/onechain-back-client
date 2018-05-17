@@ -76,7 +76,7 @@ public final class EthereumHelper {
   public static DynamicArray<Address> convertAndGetAddressDA(String[] addressArray) {
     DynamicArray<Address> addressDA;
     Address[] addresses = new Address[addressArray == null ? 0 : addressArray.length];
-    for (int i = 0; i < addressArray.length; i++) {
+    for (int i = 0; i < addresses.length; i++) {
       addresses[i] = new Address(addressArray[i]);
     }
 

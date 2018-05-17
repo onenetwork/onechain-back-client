@@ -19,81 +19,88 @@ module.exports = {
             web3 = new Web3(new Web3.providers.HttpProvider(config.url));
         }
 
-        // Warning - this abi must be updated any time Backchain.sol changes
+        // Warning - this abi must be updated any time ContractBackchain.sol changes
         var abi = [{
-            "type": "function",
-            "payable": false,
-            "outputs": [{
-                "type": "uint256",
-                "name": ""
-            }],
-            "name": "hashCount",
-            "inputs": [],
-            "constant": true
-        }, {
-            "type": "function",
-            "payable": false,
-            "outputs": [{
-                "type": "bytes32",
-                "name": ""
-            }],
-            "name": "getHash",
-            "inputs": [{
-                "type": "uint256",
-                "name": "index"
-            }],
-            "constant": true
-        }, {
-            "type": "function",
-            "payable": false,
-            "outputs": [{
-                "type": "bool",
-                "name": ""
-            }],
-            "name": "verify",
-            "inputs": [{
-                "type": "bytes32",
-                "name": "hash"
-            }],
-            "constant": true
-        }, {
-            "type": "function",
-            "payable": false,
-            "outputs": [],
-            "name": "post",
-            "inputs": [{
-                "type": "bytes32",
-                "name": "hash"
-            }],
-            "constant": false
-        }, {
-            "type": "function",
-            "payable": false,
-            "outputs": [{
-                "type": "address",
-                "name": ""
-            }],
-            "name": "orchestrator",
-            "inputs": [],
-            "constant": true
-        }, {
-            "type": "function",
-            "payable": false,
-            "outputs": [{
-                "type": "bool",
-                "name": ""
-            }],
-            "name": "hashMapping",
-            "inputs": [{
-                "type": "bytes32",
-                "name": ""
-            }],
-            "constant": true
-        }, {
-            "type": "constructor",
-            "payable": false,
-            "inputs": []
-        }];
+                "constant": true,
+                "inputs": [],
+                "name": "hashCount",
+                "outputs": [{
+                    "name": "",
+                    "type": "uint256"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                    "name": "index",
+                    "type": "uint256"
+                }],
+                "name": "getHash",
+                "outputs": [{
+                    "name": "",
+                    "type": "bytes32"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                    "name": "hash",
+                    "type": "bytes32"
+                }],
+                "name": "verify",
+                "outputs": [{
+                    "name": "",
+                    "type": "bool"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                    "name": "hash",
+                    "type": "bytes32"
+                }],
+                "name": "post",
+                "outputs": [],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "orchestrator",
+                "outputs": [{
+                    "name": "",
+                    "type": "address"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                    "name": "",
+                    "type": "bytes32"
+                }],
+                "name": "hashMapping",
+                "outputs": [{
+                    "name": "",
+                    "type": "bool"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "payable": false,
+                "type": "constructor"
+            }
+        ];
 
         if (!config.fromAddress) {
             if (config.privateKey) {
@@ -140,271 +147,220 @@ module.exports = {
 
         // Warning - this abi must be updated any time DisputeBackchain.sol changes
         var abi = [{
-            "constant": true,
-            "inputs": [{
-                "name": "id",
-                "type": "bytes32"
-            }],
-            "name": "getDisputeHeader",
-            "outputs": [{
-                "name": "",
-                "type": "address"
-            }, {
-                "name": "",
-                "type": "bytes32"
-            }, {
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "id",
-                "type": "bytes32"
-            }],
-            "name": "getDisputeDetail",
-            "outputs": [{
-                "name": "",
-                "type": "uint256"
-            }, {
-                "name": "",
-                "type": "uint256"
-            }, {
-                "name": "",
-                "type": "string"
-            }, {
-                "name": "",
-                "type": "string"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": false,
-            "inputs": [{
-                "name": "id",
-                "type": "bytes32"
-            }],
-            "name": "closeDispute",
-            "outputs": [],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "reasonValues",
-                "type": "uint256[]"
-            }],
-            "name": "filterDisputesByReason",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "submittedDateStart",
-                "type": "uint256"
-            }, {
-                "name": "submittedDateEnd",
-                "type": "uint256"
-            }, {
-                "name": "closedDateStart",
-                "type": "uint256"
-            }, {
-                "name": "closedDateEnd",
-                "type": "uint256"
-            }],
-            "name": "filterDisputesByDates",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": false,
-            "inputs": [{
-                "name": "disputeID",
-                "type": "bytes32"
-            }, {
-                "name": "disputingPartyAddress",
-                "type": "address"
-            }, {
-                "name": "disputedTransactionID",
-                "type": "bytes32"
-            }, {
-                "name": "disputedBusinessTransactionIDs",
-                "type": "bytes32[]"
-            }, {
-                "name": "reasonCode",
-                "type": "string"
-            }],
-            "name": "submitDispute",
-            "outputs": [],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "stateValues",
-                "type": "uint256[]"
-            }],
-            "name": "filterDisputesByState",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [],
-            "name": "getOrchestrator",
-            "outputs": [{
-                "name": "",
-                "type": "address"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputedBusinessTransactionIds",
-                "type": "bytes32[]"
-            }],
-            "name": "filterDisputesByDisputedBusinessTransactionIDs",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": false,
-            "inputs": [{
-                "name": "valInMinute",
-                "type": "uint256"
-            }],
-            "name": "setDisputeSubmissionWindowInMinutes",
-            "outputs": [],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "submittedDateStart",
-                "type": "uint256"
-            }, {
-                "name": "submittedDateEnd",
-                "type": "uint256"
-            }, {
-                "name": "closedDateStart",
-                "type": "uint256"
-            }, {
-                "name": "closedDateEnd",
-                "type": "uint256"
-            }, {
-                "name": "stateValues",
-                "type": "uint256[]"
-            }, {
-                "name": "reasonValues",
-                "type": "uint256[]"
-            }],
-            "name": "filterDisputeByDetail",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [],
-            "name": "getDisputeSubmissionWindowInMinutes",
-            "outputs": [{
-                "name": "",
-                "type": "uint256"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputingParties",
-                "type": "address[]"
-            }, {
-                "name": "disputedTransactionIDs",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputedBusinessTransactionIDs",
-                "type": "bytes32[]"
-            }],
-            "name": "filterDisputeByHeaders",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputingParties",
-                "type": "address[]"
-            }],
-            "name": "filterDisputesByDisputingParty",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "ids",
-                "type": "bytes32[]"
-            }, {
-                "name": "disputedTransactionIDs",
-                "type": "bytes32[]"
-            }],
-            "name": "filterDisputesByDisputedTransactionIDs",
-            "outputs": [{
-                "name": "",
-                "type": "bytes32[]"
-            }],
-            "payable": false,
-            "type": "function"
-        }, {
-            "inputs": [],
-            "payable": false,
-            "type": "constructor"
-        }];
+                "constant": true,
+                "inputs": [{
+                    "name": "id",
+                    "type": "bytes32"
+                }],
+                "name": "getDisputeHeader",
+                "outputs": [{
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32[]"
+                    }
+                ],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                    "name": "id",
+                    "type": "bytes32"
+                }],
+                "name": "getDisputeDetail",
+                "outputs": [{
+                        "name": "",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "",
+                        "type": "string"
+                    },
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                    "name": "id",
+                    "type": "bytes32"
+                }],
+                "name": "closeDispute",
+                "outputs": [],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                        "name": "disputeID",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "disputingPartyAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "disputedTransactionID",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "disputedBusinessTransactionIDs",
+                        "type": "bytes32[]"
+                    },
+                    {
+                        "name": "reasonCode",
+                        "type": "string"
+                    }
+                ],
+                "name": "submitDispute",
+                "outputs": [],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getOrchestrator",
+                "outputs": [{
+                    "name": "",
+                    "type": "address"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{
+                    "name": "valInMinute",
+                    "type": "uint256"
+                }],
+                "name": "setDisputeSubmissionWindowInMinutes",
+                "outputs": [],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                        "name": "ids",
+                        "type": "bytes32[]"
+                    },
+                    {
+                        "name": "submittedDateStart",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "submittedDateEnd",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "closedDateStart",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "closedDateEnd",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "stateValues",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "name": "reasonValues",
+                        "type": "uint256[]"
+                    }
+                ],
+                "name": "filterDisputeByDetail",
+                "outputs": [{
+                    "name": "",
+                    "type": "bytes32[]"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getDisputeSubmissionWindowInMinutes",
+                "outputs": [{
+                    "name": "",
+                    "type": "uint256"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{
+                        "name": "ids",
+                        "type": "bytes32[]"
+                    },
+                    {
+                        "name": "disputingParties",
+                        "type": "address[]"
+                    },
+                    {
+                        "name": "disputedTransactionIDs",
+                        "type": "bytes32[]"
+                    },
+                    {
+                        "name": "disputedBusinessTransactionIDs",
+                        "type": "bytes32[]"
+                    }
+                ],
+                "name": "filterDisputeByHeaders",
+                "outputs": [{
+                    "name": "",
+                    "type": "bytes32[]"
+                }],
+                "payable": false,
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "payable": false,
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [{
+                        "indexed": true,
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "_id",
+                        "type": "bytes32"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "LogTrace",
+                "type": "event"
+            }
+        ];
 
         if (!config.fromAddress) {
             if (config.privateKey) {
@@ -418,94 +374,144 @@ module.exports = {
             from: config.fromAddress,
             gas: 1000000
         });
-		
-		// private functions		
-		var isArray = function(obj) {
-			return Object.prototype.toString.call(obj) === '[object Array]';
-		};
-		
-		var isEmpty = function(obj){
-			return  obj === null || obj === undefined || ((isArray(obj) && obj.length <= 0)) || ( typeof obj === 'string' && obj.trim().length <= 0);
-		};
-		
-		var isValidReasonCode = function(reason){
-			switch (reason) {
-				case "HASH_NOT_FOUND":
-				case "INPUT_DISPUTED":
-				case "TRANSACTION_DATE_DISPUTED":
-				case "TRANSACTION_PARTIES_DISPUTED":
-				case "DISPUTE_BUSINESS_TRANSACTIONS":
-				case "FINANCIAL_DISPUTED":
-					return true;
-			}
-			return false;
-		};
-		
-		var convertStringToByte = function(paramString) {
-			return  paramString.indexOf('0x') !== 0 ? '0x' + paramString : paramString;
-		};
-		
-		var convertByteToString = function(paramBytes) {
-			return paramBytes.indexOf('0x') === 0 ? paramBytes.substring(2) : paramBytes;
-		};
-		
-		var convertByteArrayToStringArray = function(byteArray) {
-			var returnStringArray = [];
-			if(!isEmpty(byteArray) && isArray(byteArray)) { 
-				for(var i = 0; i < byteArray.length; i++) {
-					returnStringArray.push(convertByteToString(byteArray[i]))
-				}
-			}
-			return returnStringArray;
-		};
-		
-		var convertStringArrayToByteArray = function (stringArray) {
-			var returnByteArray = [];
-			if(!isEmpty(stringArray) && isArray(stringArray)) {
-				for(var i = 0; i < stringArray.length; i++) {
-					returnByteArray.push(convertStringToByte(stringArray[i]))
-				}
-			}
-			return returnByteArray;
-			
-		};
-		
-		var convertProps = function(obj, isConvertToBytes){
-			var arrayObj = [];
-			if (isEmpty(obj)) {
-				return arrayObj;
-			}
-			else if(!isArray(obj)) {
-				arrayObj.push(obj);
-			}
-			return isConvertToBytes? convertStringArrayToByteArray(arrayObj) : arrayObj;
-		};
-		
+
+        // private functions		
+        var isArray = function(obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        };
+
+        var isEmpty = function(obj) {
+            return obj === null || obj === undefined || ((isArray(obj) && obj.length <= 0)) || (typeof obj === 'string' && obj.trim().length <= 0);
+        };
+
+        var isValidReasonCode = function(reason) {
+            switch (reason) {
+                case "HASH_NOT_FOUND":
+                case "INPUT_DISPUTED":
+                case "TRANSACTION_DATE_DISPUTED":
+                case "TRANSACTION_PARTIES_DISPUTED":
+                case "DISPUTE_BUSINESS_TRANSACTIONS":
+                case "FINANCIAL_DISPUTED":
+                    return true;
+            }
+            return false;
+        };
+
+        var isValidBytes = function(paramBytes) {
+            if(isEmpty(paramBytes)) {
+                return true;
+            }
+            if(isArray(paramBytes)){
+                for(var i = 0; i < paramBytes.length; i++) {
+                    if(!isValidBytes(paramBytes[i])) {
+                        return false;
+                    }
+                }
+            }
+            else if(Object.prototype.toString.call(paramBytes) === "[object String]"){
+                var charCode;
+                for(var j = 0; j < paramBytes.length; j++) {
+                    charCode = paramBytes.charCodeAt(j);
+                    if(!((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 69) || (charCode >= 97 && charCode <= 101))) {
+                        return false;
+                    }
+                }
+            }
+            else if(Object.prototype.toString.call(paramBytes) === "[object Object]"){
+                var propNames = Object.getOwnPropertyNames(paramBytes);
+                for(var k = 0; k < propNames.length; k++) {
+                    if(!isValidBytes(paramBytes[propNames[j]])) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+
+        var convertStringToByte = function(paramString) {
+            return paramString.indexOf('0x') !== 0 ? '0x' + paramString : paramString;
+        };
+
+        var convertByteToString = function(paramBytes) {
+            return paramBytes.indexOf('0x') === 0 ? paramBytes.substring(2) : paramBytes;
+        };
+
+        var convertByteArrayToStringArray = function(byteArray) {
+            var returnStringArray = [];
+            if (!isEmpty(byteArray)) {
+                if (isArray(byteArray)) {
+                    for (var i = 0; i < byteArray.length; i++) {
+                        returnStringArray.push(convertByteToString(byteArray[i]))
+                    }
+                } else {
+                    returnStringArray.push(convertByteToString(byteArray))
+                }
+            }
+            return returnStringArray;
+        };
+
+        var convertStringArrayToByteArray = function(stringArray) {
+            var returnByteArray = [];
+            if (!isEmpty(stringArray)) {
+                if (isArray(stringArray)) {
+                    for (var i = 0; i < stringArray.length; i++) {
+                        returnByteArray.push(convertStringToByte(stringArray[i]))
+                    }
+                } else {
+                    returnByteArray.push(convertStringToByte(stringArray))
+                }
+            }
+            return returnByteArray;
+        };
+
+        var convertProps = function(obj, isConvertToBytes) {
+            var arrayObj = [];
+            if (isEmpty(obj)) {
+                return arrayObj;
+            } else if (!isArray(obj)) {
+                arrayObj.push(isConvertToBytes ? convertStringToByte(obj) : obj);
+            } else {
+                arrayObj = obj;
+            }
+            return isConvertToBytes ? convertStringArrayToByteArray(arrayObj) : arrayObj;
+        };
+
         return {
             config: config,
             submitDispute: function(dispute) {
-				var localDispute = JSON.parse(JSON.stringify(dispute));
+                var localDispute = JSON.parse(JSON.stringify(dispute));
                 if (isEmpty(localDispute.disputingParty)) {
                     localDispute.disputingParty = config.fromAddress;
+                } else if (convertStringToByte(config.fromAddress) === convertStringToByte(localDispute.disputingParty)) {
+                    Promise.reject(new Error("Cannot submit dispute. DisputingParty does not match with creator address"));
                 }
-				else if(convertStringToByte(config.fromAddress) === convertStringToByte(localDispute.disputingParty)) {
-					Promise.reject(new Error("Cannot submit dispute. DisputingParty does not match with creator address"));
-				}
                 if (isEmpty(localDispute.disputeId)) {
                     localDispute.disputeId = '0x0000000000000000000000000000000000000000000000000000000000000000';
                 }
-				if(isEmpty(localDispute.disputedTransactionId)) {
-					return Promise.reject(new Error("disputedTransactionId is required. Cannot be null or empty" + localDispute.disputedTransactionId));
-				}
-				if(isEmpty(localDispute.reason)){
-					return Promise.reject(new Error("Reason is required. Cannot be null or empty"));			
-				}
-				if(!isValidReasonCode(localDispute.reason)){
-					return Promise.reject(new Error("Invalid Reason code :" + localDispute.reason + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));			
-				}
+                if (isEmpty(localDispute.disputedTransactionId)) {
+                    return Promise.reject(new Error("disputedTransactionId is required. Cannot be null or empty" + localDispute.disputedTransactionId));
+                }
+                else if (!isValidBytes(localDispute.disputedTransactionId)) {
+                    return Promise.reject(new Error("disputedTransactionId is not of type Byte"));
+                }
+                if (isEmpty(localDispute.reason)) {
+                    return Promise.reject(new Error("Reason is required. Cannot be null or empty"));
+                }
+                if (!isValidReasonCode(localDispute.reason)) {
+                    return Promise.reject(new Error("Invalid Reason code :" + localDispute.reason + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));
+                }
+                if (!isValidBytes(localDispute.disputedBusinessTransactionIds)) {
+                    return Promise.reject(new Error("disputedBusinessTransactionIds is not of type Byte"));
+                }
                 return disputeContract.methods.submitDispute(convertStringToByte(localDispute.disputeId), convertStringToByte(localDispute.disputingParty), convertStringToByte(localDispute.disputedTransactionId), convertStringArrayToByteArray(localDispute.disputedBusinessTransactionIds), localDispute.reason).send();
             },
             closeDispute: function(disputeIDHash) {
+                if (isEmpty(disputeIDHash)) {
+                    return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
+                }
+                if (!isValidBytes(disputeIDHash)) {
+                    return Promise.reject(new Error("disputeId is not of type Bytes"));
+                }
                 return disputeContract.methods.closeDispute(convertStringToByte(disputeIDHash)).send();
             },
             getDisputeSubmissionWindowInMinutes: function() {
@@ -515,19 +521,22 @@ module.exports = {
                 return disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).send();
             },
             getDispute: function(disputeIDHash) {
-				if(isEmpty(disputeIDHash)) {
-					return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
-				}
+                if (isEmpty(disputeIDHash)) {
+                    return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
+                }
+                if (!isValidBytes(disputeIDHash)) {
+                    return Promise.reject(new Error("disputeId is not of type Bytes"));
+                }
                 var dispute = {};
-				dispute.disputeId = convertStringToByte(disputeIDHash);
+                dispute.disputeId = convertStringToByte(disputeIDHash);
                 return disputeContract.methods.getDisputeHeader(dispute.disputeId).call().then(function(disputeHeaders) {
                     dispute.disputingParty = disputeHeaders[0];
                     dispute.disputedTransactionId = disputeHeaders[1];
                     dispute.disputedBusinessTransactionIds = disputeHeaders[2];
                     return disputeContract.methods.getDisputeDetail(dispute.disputeId).call();
                 }).then(function(disputeDetails) {
-                    dispute.submittedDate = disputeDetails[0];
-                    dispute.closedDate = disputeDetails[1];
+                    dispute.submittedDate = parseInt(disputeDetails[0]);
+                    dispute.closedDate = disputeDetails[1] === '0' || disputeDetails[1] === 0 ? null : parseInt(disputeDetails[1]);
                     dispute.state = disputeDetails[2];
                     dispute.reason = disputeDetails[3];
                     return Promise.resolve(dispute);
@@ -536,12 +545,25 @@ module.exports = {
             getOrchestrator: function() {
                 return disputeContract.methods.getOrchestrator().call();
             },
-			getFilterDisputeIds(disputeFilter) {
-				var filter = JSON.parse(JSON.stringify(disputeFilter));	
-				filter.disputeId = convertProps(filter.disputeId, true);
-				filter.disputingParty = convertProps(filter.disputingParty, true);
-				filter.disputedTransactionId = convertProps(filter.disputedTransactionId, true);
-				filter.disputedBusinessTransactionIds = convertProps(filter.disputedBusinessTransactionIds, true);
+            getFilterDisputeIds(disputeFilter) {
+                var filter = JSON.parse(JSON.stringify(disputeFilter));
+                if (!isValidBytes(localDispute.disputeId)) {
+                    return Promise.reject(new Error("disputeId is not of type Byte"));
+                }
+                if (!isValidBytes(localDispute.disputingParty)) {
+                    return Promise.reject(new Error("disputingParty is not of type Byte"));
+                }
+                if (!isValidBytes(localDispute.disputedTransactionId)) {
+                    return Promise.reject(new Error("disputedTransactionId is not of type Byte"));
+                }
+                if (!isValidBytes(localDispute.disputedBusinessTransactionIds)) {
+                    return Promise.reject(new Error("disputedBusinessTransactionIds is not of type Byte"));
+                }
+                filter.disputeId = convertProps(filter.disputeId, true);
+                filter.disputingParty = convertProps(filter.disputingParty, true);
+                filter.disputedTransactionId = convertProps(filter.disputedTransactionId, true);
+                filter.disputedBusinessTransactionIds = convertProps(filter.disputedBusinessTransactionIds, true);
+                
                 return disputeContract.methods.filterDisputeByHeaders(filter.disputeId, filter.disputingParty, filter.disputedTransactionId, filter.disputedBusinessTransactionIds).call().then(function(disputeIDsHash) {
                     if (disputeIDsHash.length <= 0) {
                         return Promise.resolve([]);
@@ -559,64 +581,64 @@ module.exports = {
                         filter.closedDateEnd = 0;
                     }
                     var stateArray = [];
-					filter.state = convertProps(filter.state, false);
-					for (var i = 0; i < filter.state.length; i++) {
-						switch (filter.state[i]) {
-							case "OPEN":
-								stateArray.push(0);
-								break;
+                    filter.state = convertProps(filter.state, false);
+                    for (var i = 0; i < filter.state.length; i++) {
+                        switch (filter.state[i]) {
+                            case "OPEN":
+                                stateArray.push(0);
+                                break;
 
-							case "CLOSED":
-								stateArray.push(1);
-								break;
-							
-							default:
-							 return Promise.reject(new Error("Invalid State code :" + filter.states[i] + " valid states are [OPEN, CLOSED]"));
-						}
-					}
+                            case "CLOSED":
+                                stateArray.push(1);
+                                break;
+
+                            default:
+                                return Promise.reject(new Error("Invalid State code :" + filter.states[i] + " valid states are [OPEN, CLOSED]"));
+                        }
+                    }
                     var reasonArray = [];
-					filter.reason = convertProps(filter.reason, false);
-					for (var i = 0; i < filter.reason.length; i++) {
-						switch (filter.reason[i]) {
-							case "HASH_NOT_FOUND":
-								reasonArray.push(0);
-								break;
+                    filter.reason = convertProps(filter.reason, false);
+                    for (var i = 0; i < filter.reason.length; i++) {
+                        switch (filter.reason[i]) {
+                            case "HASH_NOT_FOUND":
+                                reasonArray.push(0);
+                                break;
 
-							case "INPUT_DISPUTED":
-								reasonArray.push(1);
-								break;
+                            case "INPUT_DISPUTED":
+                                reasonArray.push(1);
+                                break;
 
-							case "TRANSACTION_DATE_DISPUTED":
-								reasonArray.push(2);
-								break;
+                            case "TRANSACTION_DATE_DISPUTED":
+                                reasonArray.push(2);
+                                break;
 
-							case "TRANSACTION_PARTIES_DISPUTED":
-								reasonArray.push(3);
-								break;
+                            case "TRANSACTION_PARTIES_DISPUTED":
+                                reasonArray.push(3);
+                                break;
 
-							case "DISPUTE_BUSINESS_TRANSACTIONS":
-								reasonArray.push(4);
-								break;
+                            case "DISPUTE_BUSINESS_TRANSACTIONS":
+                                reasonArray.push(4);
+                                break;
 
-							case "FINANCIAL_DISPUTED":
-								reasonArray.push(5);
-								break;
-								
-							default:
-							 return Promise.reject(new Error("Invalid Reason code :" + filter.reasons[i] + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));
-						}
-					}
+                            case "FINANCIAL_DISPUTED":
+                                reasonArray.push(5);
+                                break;
+
+                            default:
+                                return Promise.reject(new Error("Invalid Reason code :" + filter.reasons[i] + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));
+                        }
+                    }
                     return disputeContract.methods.filterDisputeByDetail(disputeIDsHash, filter.submittedDateStart, filter.submittedDateEnd, filter.closedDateStart, filter.closedDateEnd, stateArray, reasonArray).call();
                 });
-			},
-			getDisputeCount: function(disputeFilter) {
-				return this.getFilterDisputeIds(disputeFilter).then(function(disputeIds){
-					return Promise.resolve(disputeIds.length);
-				});
-			},
+            },
+            getDisputeCount: function(disputeFilter) {
+                return this.getFilterDisputeIds(disputeFilter).then(function(disputeIds) {
+                    return Promise.resolve(disputeIds.length);
+                });
+            },
             filterDisputes: function(disputeFilter) {
-				var me = this;
-				return this.getFilterDisputeIds(disputeFilter).then(function(disputeIds){
+                var me = this;
+                return this.getFilterDisputeIds(disputeFilter).then(function(disputeIds) {
                     if (disputeIds.length <= 0) {
                         return Promise.resolve([]);
                     }

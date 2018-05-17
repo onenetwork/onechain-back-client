@@ -2,6 +2,7 @@ package com.onenetwork.backchain.client;
 
 import com.onenetwork.backchain.client.eth.EthereumConfig;
 import com.onenetwork.backchain.client.eth.EthereumContentBackchainClient;
+import com.onenetwork.backchain.client.eth.EthereumDisputeBachchainClient;
 
 /**
  * Factory for acquiring instances of {@link BackchainClient}. You will need to
@@ -13,10 +14,10 @@ public class BackchainClientFactory {
 
 	/**
 	 * Given a concrete implementation of {@link BackchainClientConfig} (for example
-	 * {@link EthereumConfig}), returns a suitable {@link BackchainClient} instance.
+	 * {@link EthereumConfig}), returns a suitable {@link ContentBackchainClient} instance.
 	 * 
 	 * @param config concrete implementation of {@link BackchainClientConfig} (for example {@link EthereumConfig})
-	 * @return suitable {@link BackchainClient} instance
+	 * @return suitable {@link ContentBackchainClient} instance
 	 */
 	public static ContentBackchainClient newContentBackchainClient(BackchainClientConfig config) {
 		if (config instanceof EthereumConfig) {
@@ -25,5 +26,20 @@ public class BackchainClientFactory {
 
 		throw new IllegalArgumentException("Unsupported configuration: " + config);
 	}
+
+	 /**
+   * Given a concrete implementation of {@link BackchainClientConfig} (for example
+   * {@link EthereumConfig}), returns a suitable {@link DisputeBackchainClient} instance.
+   * 
+   * @param config concrete implementation of {@link BackchainClientConfig} (for example {@link EthereumConfig})
+   * @return suitable {@link DisputeBackchainClient} instance
+   */
+  public static DisputeBackchainClient newDisputeBackchainClient(BackchainClientConfig config) {
+    if (config instanceof EthereumConfig) {
+      return new EthereumDisputeBachchainClient((EthereumConfig) config);
+    }
+
+    throw new IllegalArgumentException("Unsupported configuration: " + config);
+  }
 
 }
