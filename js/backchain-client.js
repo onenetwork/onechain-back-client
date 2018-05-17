@@ -412,6 +412,9 @@ module.exports = {
                 var charCode;
                 for(var j = 0; j < paramBytes.length; j++) {
                     charCode = paramBytes.charCodeAt(j);
+                    if(j== 1 && charCode === 120) {
+                        continue;
+                    }
                     if(!((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 69) || (charCode >= 97 && charCode <= 101))) {
                         return false;
                     }
@@ -491,27 +494,15 @@ module.exports = {
                 if (isEmpty(localDispute.disputedTransactionId)) {
                     return Promise.reject(new Error("disputedTransactionId is required. Cannot be null or empty" + localDispute.disputedTransactionId));
                 }
-                else if (!isValidBytes(localDispute.disputedTransactionId)) {
-                    return Promise.reject(new Error("disputedTransactionId is not of type Byte"));
-                }
                 if (isEmpty(localDispute.reason)) {
                     return Promise.reject(new Error("Reason is required. Cannot be null or empty"));
                 }
                 if (!isValidReasonCode(localDispute.reason)) {
                     return Promise.reject(new Error("Invalid Reason code :" + localDispute.reason + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));
                 }
-                if (!isValidBytes(localDispute.disputedBusinessTransactionIds)) {
-                    return Promise.reject(new Error("disputedBusinessTransactionIds is not of type Byte"));
-                }
                 return disputeContract.methods.submitDispute(convertStringToByte(localDispute.disputeId), convertStringToByte(localDispute.disputingParty), convertStringToByte(localDispute.disputedTransactionId), convertStringArrayToByteArray(localDispute.disputedBusinessTransactionIds), localDispute.reason).send();
             },
             closeDispute: function(disputeIDHash) {
-                if (isEmpty(disputeIDHash)) {
-                    return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
-                }
-                if (!isValidBytes(disputeIDHash)) {
-                    return Promise.reject(new Error("disputeId is not of type Bytes"));
-                }
                 return disputeContract.methods.closeDispute(convertStringToByte(disputeIDHash)).send();
             },
             getDisputeSubmissionWindowInMinutes: function() {
@@ -523,9 +514,6 @@ module.exports = {
             getDispute: function(disputeIDHash) {
                 if (isEmpty(disputeIDHash)) {
                     return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
-                }
-                if (!isValidBytes(disputeIDHash)) {
-                    return Promise.reject(new Error("disputeId is not of type Bytes"));
                 }
                 var dispute = {};
                 dispute.disputeId = convertStringToByte(disputeIDHash);
@@ -547,23 +535,10 @@ module.exports = {
             },
             getFilterDisputeIds(disputeFilter) {
                 var filter = JSON.parse(JSON.stringify(disputeFilter));
-                if (!isValidBytes(localDispute.disputeId)) {
-                    return Promise.reject(new Error("disputeId is not of type Byte"));
-                }
-                if (!isValidBytes(localDispute.disputingParty)) {
-                    return Promise.reject(new Error("disputingParty is not of type Byte"));
-                }
-                if (!isValidBytes(localDispute.disputedTransactionId)) {
-                    return Promise.reject(new Error("disputedTransactionId is not of type Byte"));
-                }
-                if (!isValidBytes(localDispute.disputedBusinessTransactionIds)) {
-                    return Promise.reject(new Error("disputedBusinessTransactionIds is not of type Byte"));
-                }
                 filter.disputeId = convertProps(filter.disputeId, true);
                 filter.disputingParty = convertProps(filter.disputingParty, true);
                 filter.disputedTransactionId = convertProps(filter.disputedTransactionId, true);
                 filter.disputedBusinessTransactionIds = convertProps(filter.disputedBusinessTransactionIds, true);
-                
                 return disputeContract.methods.filterDisputeByHeaders(filter.disputeId, filter.disputingParty, filter.disputedTransactionId, filter.disputedBusinessTransactionIds).call().then(function(disputeIDsHash) {
                     if (disputeIDsHash.length <= 0) {
                         return Promise.resolve([]);

@@ -21,11 +21,11 @@ var bc = oneChain.createContentBcClient(config);
 
 var disputeBC = oneChain.createDisputeBcClient(config);
 
-describe('backchain-client', function() {
+describe('contentbackchain-client', function() {
 
     describe('etherium', function() {
 
-        it('supports all smart contract methods', function() {
+        it('supports all smart contract methods for ContentBackchain', function() {
             var initialHashCount;
             bc.hashCount().then(function(hashCount) {
                 initialHashCount = hashCount;
@@ -49,8 +49,9 @@ describe('backchain-client', function() {
                 return bc.getOrchestrator();
             }).then(function(orchestrator) {
                 expect(orchestrator.toUpperCase()).to.equal(bc.config.fromAddress.toUpperCase());
+                console.log('ContentBackchain all test case passed');
             });
-        }); 
+        });
 
     });
 
@@ -58,7 +59,7 @@ describe('backchain-client', function() {
 
 describe('disputeBackchain-client', function() {
     describe('etherium', function() {
-        it('supports all smart dispute methods', function() {
+        it('supports all smart dispute methods for DisputeBackchain contract', function() {
             var initialHashCount;
             disputeBC.getOrchestrator().then(function(orchestrator) {
                 expect(orchestrator.toUpperCase()).to.equal(disputeBC.config.fromAddress.toUpperCase());
@@ -92,26 +93,31 @@ describe('disputeBackchain-client', function() {
                 };
                 return disputeBC.submitDispute(dispute);
             }).then(function() {
-                var disputeFilter = {reason:["FINANCIAL_DISPUTED"]};
-				return disputeBC.filterDisputes(disputeFilter);
+                var disputeFilter = {
+                    reason: ["FINANCIAL_DISPUTED"]
+                };
+                return disputeBC.filterDisputes(disputeFilter);
             }).then(function(disputes) {
-				var disputeFilter = {disputeId:sampleHashString};
-			   return disputeBC.getDisputeCount(disputeFilter);
-            }).then(function(count){
-				expect(count).to.equal(1);
-				var dispute = {
+                var disputeFilter = {
+                    disputeId: null
+                };
+                return disputeBC.getDisputeCount(disputeFilter);
+            }).then(function(count) {
+                expect(count).to.equal(1);
+                var dispute = {
                     disputedTransactionId: "0xc5d4b021858a17828532e484b915149af5e1b133",
                     reason: "FINANCIAL_DISPUTED",
-					disputingParty: '0x0000000000000000001'
+                    disputingParty: '0x0000000000000000001'
                 };
                 return disputeBC.submitDispute(dispute);
-			}).then(function(){
-				return Promise.reject("Exception anticipated");
-			}).catch(function(reason) {
-				if ((reason.message || reason).indexOf("DisputingParty") > -1) {
-					assert.fail(reason.message);
-				}
-			});
+            }).then(function() {
+                return Promise.reject("Exception anticipated");
+            }).catch(function(reason) {
+                if ((reason.message || reason).indexOf("DisputingParty") > -1) {
+                    assert.fail(reason.message);
+                }
+                console.log('DisputeBackchain all test case passed');
+            });
         });
     });
 });
