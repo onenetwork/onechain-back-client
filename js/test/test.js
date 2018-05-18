@@ -49,7 +49,7 @@ describe('contentbackchain-client', function() {
                 return bc.getOrchestrator();
             }).then(function(orchestrator) {
                 expect(orchestrator.toUpperCase()).to.equal(bc.config.fromAddress.toUpperCase());
-                console.log('ContentBackchain all test case passed');
+                console.log('ContentBackchain all test case passed :)');
             });
         });
 
@@ -94,12 +94,24 @@ describe('disputeBackchain-client', function() {
                 return disputeBC.submitDispute(dispute);
             }).then(function() {
                 var disputeFilter = {
-                    reason: ["FINANCIAL_DISPUTED"]
+                    reason: ["FINANCIAL_DISPUTED"],
+                    disputingParty: '00000sdf000000000000001'
                 };
                 return disputeBC.filterDisputes(disputeFilter);
-            }).then(function(disputes) {
+            }).catch(function(reason) {
+                if ((reason.message || reason).indexOf("disputingParty") <= -1) {
+                    assert.fail(reason.message);
+                }
                 var disputeFilter = {
-                    disputeId: null
+                    disputingParty: 'ax000sdf000000000000001'
+                };
+                return disputeBC.filterDisputes(disputeFilter);
+            }).catch(function(reason) {
+                if ((reason.message || reason).indexOf("disputingParty") <= -1) {
+                    assert.fail(reason.message);
+                }
+                var disputeFilter = {
+                    disputeId: sampleHashString
                 };
                 return disputeBC.getDisputeCount(disputeFilter);
             }).then(function(count) {
@@ -107,16 +119,14 @@ describe('disputeBackchain-client', function() {
                 var dispute = {
                     disputedTransactionId: "0xc5d4b021858a17828532e484b915149af5e1b133",
                     reason: "FINANCIAL_DISPUTED",
-                    disputingParty: '0x0000000000000000001'
+                    disputingParty: '000000qw00000000000001'
                 };
                 return disputeBC.submitDispute(dispute);
-            }).then(function() {
-                return Promise.reject("Exception anticipated");
             }).catch(function(reason) {
-                if ((reason.message || reason).indexOf("DisputingParty") > -1) {
+                if ((reason.message || reason).indexOf("DisputingParty") <= -1) {
                     assert.fail(reason.message);
                 }
-                console.log('DisputeBackchain all test case passed');
+                console.log('DisputeBackchain all test case passed :)');
             });
         });
     });

@@ -375,7 +375,7 @@ module.exports = {
             gas: 1000000
         });
 
-        // private functions		
+        // private functions
         var isArray = function(obj) {
             return Object.prototype.toString.call(obj) === '[object Array]';
         };
@@ -412,10 +412,10 @@ module.exports = {
                 var charCode;
                 for(var j = 0; j < paramBytes.length; j++) {
                     charCode = paramBytes.charCodeAt(j);
-                    if(j== 1 && charCode === 120) {
+                    if(j == 1 && paramBytes.charCodeAt(0) === 48 && (charCode === 120 || charCode === 88)) {
                         continue;
                     }
-                    if(!((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 69) || (charCode >= 97 && charCode <= 101))) {
+                    if(!((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 70) || (charCode >= 97 && charCode <= 102))) {
                         return false;
                     }
                 }
@@ -438,7 +438,6 @@ module.exports = {
         var convertByteToString = function(paramBytes) {
             return paramBytes.indexOf('0x') === 0 ? paramBytes.substring(2) : paramBytes;
         };
-
         var convertByteArrayToStringArray = function(byteArray) {
             var returnStringArray = [];
             if (!isEmpty(byteArray)) {
@@ -485,14 +484,20 @@ module.exports = {
                 var localDispute = JSON.parse(JSON.stringify(dispute));
                 if (isEmpty(localDispute.disputingParty)) {
                     localDispute.disputingParty = config.fromAddress;
-                } else if (convertStringToByte(config.fromAddress) === convertStringToByte(localDispute.disputingParty)) {
-                    Promise.reject(new Error("Cannot submit dispute. DisputingParty does not match with creator address"));
+                } else if (convertStringToByte(config.fromAddress) !== convertStringToByte(localDispute.disputingParty)) {
+                    return Promise.reject(new Error("Cannot submit dispute. DisputingParty does not match with creator address"));
                 }
                 if (isEmpty(localDispute.disputeId)) {
                     localDispute.disputeId = '0x0000000000000000000000000000000000000000000000000000000000000000';
                 }
+                else if(!isValidBytes(localDispute.disputeId)) {
+                    return Promise.reject(new Error("disputeId is invalid byte string: " + localDispute.disputeId));
+                }
                 if (isEmpty(localDispute.disputedTransactionId)) {
                     return Promise.reject(new Error("disputedTransactionId is required. Cannot be null or empty" + localDispute.disputedTransactionId));
+                }
+                else if(!isValidBytes(localDispute.disputedTransactionId)) {
+                    return Promise.reject(new Error("disputedTransactionId is invalid byte string: " + localDispute.disputedTransactionId));
                 }
                 if (isEmpty(localDispute.reason)) {
                     return Promise.reject(new Error("Reason is required. Cannot be null or empty"));
@@ -500,10 +505,19 @@ module.exports = {
                 if (!isValidReasonCode(localDispute.reason)) {
                     return Promise.reject(new Error("Invalid Reason code :" + localDispute.reason + " valid reason are [HASH_NOT_FOUND, INPUT_DISPUTED, TRANSACTION_DATE_DISPUTED, TRANSACTION_PARTIES_DISPUTED, DISPUTE_BUSINESS_TRANSACTIONS, FINANCIAL_DISPUTED]"));
                 }
+                if(!isValidBytes(localDispute.disputedBusinessTransactionIds)) {
+                    return Promise.reject(new Error("disputedBusinessTransactionIds is invalid byte string: " + localDispute.disputedBusinessTransactionIds));
+                }
                 return disputeContract.methods.submitDispute(convertStringToByte(localDispute.disputeId), convertStringToByte(localDispute.disputingParty), convertStringToByte(localDispute.disputedTransactionId), convertStringArrayToByteArray(localDispute.disputedBusinessTransactionIds), localDispute.reason).send();
             },
-            closeDispute: function(disputeIDHash) {
-                return disputeContract.methods.closeDispute(convertStringToByte(disputeIDHash)).send();
+            closeDispute: function(disputeId) {
+                if (isEmpty(disputeId)) {
+                    return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
+                }
+                if (!isValidBytes(disputeId)) {
+                    return Promise.reject(new Error("disputeId is invalid byte string: " + disputeId));
+                }
+                return disputeContract.methods.closeDispute(convertStringToByte(disputeId)).send();
             },
             getDisputeSubmissionWindowInMinutes: function() {
                 return disputeContract.methods.getDisputeSubmissionWindowInMinutes().call();
@@ -511,12 +525,15 @@ module.exports = {
             setDisputeSubmissionWindowInMinutes: function(valueInMiniute) {
                 return disputeContract.methods.setDisputeSubmissionWindowInMinutes(valueInMiniute).send();
             },
-            getDispute: function(disputeIDHash) {
-                if (isEmpty(disputeIDHash)) {
+            getDispute: function(disputeId) {
+                if (isEmpty(disputeId)) {
                     return Promise.reject(new Error("disputeId is required. Cannot be null or empty"));
                 }
+                if (!isValidBytes(disputeId)) {
+                    return Promise.reject(new Error("disputeId is invalid byte string: " + disputeId));
+                }
                 var dispute = {};
-                dispute.disputeId = convertStringToByte(disputeIDHash);
+                dispute.disputeId = convertStringToByte(disputeId);
                 return disputeContract.methods.getDisputeHeader(dispute.disputeId).call().then(function(disputeHeaders) {
                     dispute.disputingParty = disputeHeaders[0];
                     dispute.disputedTransactionId = disputeHeaders[1];
@@ -534,6 +551,18 @@ module.exports = {
                 return disputeContract.methods.getOrchestrator().call();
             },
             getFilterDisputeIds(disputeFilter) {
+                if (!isValidBytes(disputeFilter.disputeId)) {
+                    return Promise.reject(new Error("disputeId is invalid byte string: " + disputeFilter.disputeId));
+                }
+                if (!isValidBytes(disputeFilter.disputingParty)) {
+                    return Promise.reject(new Error("disputingParty is invalid byte string: " + disputeFilter.disputingParty));
+                }
+                if (!isValidBytes(disputeFilter.disputedTransactionId)) {
+                    return Promise.reject(new Error("disputedTransactionId is invalid byte string: " + disputeFilter.disputedTransactionId));
+                }
+                if (!isValidBytes(disputeFilter.disputedBusinessTransactionIds)) {
+                    return Promise.reject(new Error("disputedBusinessTransactionIds is invalid byte string: " + disputeFilter.disputedBusinessTransactionIds));
+                }
                 var filter = JSON.parse(JSON.stringify(disputeFilter));
                 filter.disputeId = convertProps(filter.disputeId, true);
                 filter.disputingParty = convertProps(filter.disputingParty, true);
