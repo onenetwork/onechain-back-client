@@ -5,10 +5,12 @@ import com.onenetwork.backchain.client.eth.EthereumContentBackchainClient;
 import com.onenetwork.backchain.client.eth.EthereumDisputeBackchainClient;
 
 /**
- * Factory for acquiring instances of {@link BackchainClient}. You will need to
+ * Factory for acquiring instances of {@link ContentBackchainClient} and 
+ * {@link DisputeBackchainClient}. You will need to
  * provide a concrete implementation of {@link BackchainClientConfig} (for
  * example {@link EthereumConfig}), and will then receive in return a generic
- * {@link BackchainClient} you can use for interacting with the Backchain.
+ * {@link ContentBackchainClient} or {@link DisputeBackchainClient} 
+ * you can use for interacting with the Backchain.
  */
 public class BackchainClientFactory {
 

@@ -118,7 +118,7 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 <dependency>
   <groupId>com.onenetwork.onechain</groupId>
   <artifactId>onechain-back-client</artifactId>
-  <version>0.1.1</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
@@ -126,19 +126,30 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 
 ```java
 EthereumConfig cfg = new EthereumConfig()
-  .setUrl("http://backchain-vagrant.onenetwork.com:8545")
-  .setContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138");
-BackchainClient bk = BackchainClientFactory.newBackchainClient(cfg);
+  .setUrl("http://192.168.201.55:8545")
+  .setContentBackchainContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
+  .setDisputeBackchainContractAddress("0x4a6886a515a4b800f4591a6d6a60e6004a3645ab")
+  .setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
+  .setGasPrice(BigInteger.valueOf(0L)).setGasLimit(BigInteger.valueOf(999999L));
 
-System.out.println("Backchain hashCount : " + bk.hashCount());
+ContentBackchainClient cbk = BackchainClientFactory.newContentBackchainClient(cfg);
+System.out.println("Backchain hashCount : " + cbk.hashCount());
 String sampleHash = "0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3";
-System.out.println(sampleHash + " is on the Backchain? " + bk.verify(sampleHash));
+System.out.println(sampleHash + " is on the Backchain? " + cbk.verify(sampleHash));
+
+DisputeBackchainClient dbk = BackchainClientFactory.newDisputeBackchainClient(cfg);
+Dispute dispute = new Dispute()
+  .setDisputedTransactionID("0x90aa7ef75567ce9b2f3de15f9b4825125e393fbbfa0aa65d8e5d51b218900273")
+  .setReason(Dispute.Reason.HASH_NOT_FOUND);
+dbk.submitDispute(dispute);
+System.out.println(dbk.getDispute(dispute.getDisputeID()).getState());
 ```
 
 Sample output:
 ```
 Backchain hashCount is: 13
 0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3 is on the Backchain? true
+OPEN
 ```
 
 

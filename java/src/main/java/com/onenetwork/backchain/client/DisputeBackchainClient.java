@@ -18,10 +18,11 @@ public interface DisputeBackchainClient {
   /**
    * Close the {@link Dispute} with matching disputeID.  
    * 
-   * <p/>
-   * WARNING - only the disputingParty on a Dispute can Close it.  
+   * <p>
+   * WARNING - only the disputingParty on a Dispute can Close it.
+   * </p>  
    * 
-   * @param disputeID
+   * @param disputeID ID of Dispute to be closed
    */
   void closeDispute(String disputeID);
   
@@ -53,10 +54,11 @@ public interface DisputeBackchainClient {
    * Set the Dispute submission window.Disputes may only be filed within this amount of time
    * from the point the transaction in question's block was added to the blockchain.   
    * 
-   * <p/>
+   * <p>
    * WARNING - only the Orchestrator is permitted to change the dispute submission window
+   * </p>
    * 
-   * @param timeInMinutes 
+   * @param timeInMinutes new time in minutes for submission window
    */
   void setDisputeSubmissionWindowInMinutes(int timeInMinutes);
   
@@ -71,7 +73,6 @@ public interface DisputeBackchainClient {
   /**
    * Returns the number of Disputes matching the given filter.
    *  
-   * @param disputeFilter
    * @param disputeFilter filter criteria 
    * @return number of matching Disputess
    */
