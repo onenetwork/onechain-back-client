@@ -28,7 +28,7 @@ import com.onenetwork.backchain.client.DisputeBackchainClient;
  * Implementation of {@link DisputeBackchainClient} for an
  * <a href="https://www.ethereum.org/">Ethereum</a>-based Backchain.
  */
-public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
+public class EthereumDisputeBackchainClient implements DisputeBackchainClient {
 
   private Web3j web3j;
   private DisputeBackchainABI disputeBackchainABI;
@@ -37,7 +37,7 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
   /**
    * @param config Ethereum-based {@link BackchainClientConfig}
    */
-  public EthereumDisputeBachchainClient(EthereumConfig config) {
+  public EthereumDisputeBackchainClient(EthereumConfig config) {
     web3j = Web3j.build(new HttpService(config.getUrl()));
     if (config.getPrivateKey() != null) {
       credentials = Credentials.create(config.getPrivateKey());

@@ -2,7 +2,7 @@ package com.onenetwork.backchain.client;
 
 import com.onenetwork.backchain.client.eth.EthereumConfig;
 import com.onenetwork.backchain.client.eth.EthereumContentBackchainClient;
-import com.onenetwork.backchain.client.eth.EthereumDisputeBachchainClient;
+import com.onenetwork.backchain.client.eth.EthereumDisputeBackchainClient;
 
 /**
  * Factory for acquiring instances of {@link BackchainClient}. You will need to
@@ -36,7 +36,7 @@ public class BackchainClientFactory {
    */
   public static DisputeBackchainClient newDisputeBackchainClient(BackchainClientConfig config) {
     if (config instanceof EthereumConfig) {
-      return new EthereumDisputeBachchainClient((EthereumConfig) config);
+      return new EthereumDisputeBackchainClient((EthereumConfig) config);
     }
 
     throw new IllegalArgumentException("Unsupported configuration: " + config);
