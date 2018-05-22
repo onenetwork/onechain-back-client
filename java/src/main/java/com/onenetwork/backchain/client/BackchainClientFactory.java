@@ -12,22 +12,22 @@ import com.onenetwork.backchain.client.eth.EthereumDisputeBachchainClient;
  */
 public class BackchainClientFactory {
 
-	/**
-	 * Given a concrete implementation of {@link BackchainClientConfig} (for example
-	 * {@link EthereumConfig}), returns a suitable {@link ContentBackchainClient} instance.
-	 * 
-	 * @param config concrete implementation of {@link BackchainClientConfig} (for example {@link EthereumConfig})
-	 * @return suitable {@link ContentBackchainClient} instance
-	 */
-	public static ContentBackchainClient newContentBackchainClient(BackchainClientConfig config) {
-		if (config instanceof EthereumConfig) {
-			return new EthereumContentBackchainClient((EthereumConfig) config);
-		}
+  /**
+   * Given a concrete implementation of {@link BackchainClientConfig} (for example
+   * {@link EthereumConfig}), returns a suitable {@link ContentBackchainClient} instance.
+   * 
+   * @param config concrete implementation of {@link BackchainClientConfig} (for example {@link EthereumConfig})
+   * @return suitable {@link ContentBackchainClient} instance
+   */
+  public static ContentBackchainClient newContentBackchainClient(BackchainClientConfig config) {
+    if (config instanceof EthereumConfig) {
+      return new EthereumContentBackchainClient((EthereumConfig) config);
+    }
 
-		throw new IllegalArgumentException("Unsupported configuration: " + config);
-	}
+    throw new IllegalArgumentException("Unsupported configuration: " + config);
+  }
 
-	 /**
+  /**
    * Given a concrete implementation of {@link BackchainClientConfig} (for example
    * {@link EthereumConfig}), returns a suitable {@link DisputeBackchainClient} instance.
    * 

@@ -1,5 +1,7 @@
 package com.onenetwork.backchain.client;
 
+import java.util.List;
+
 /**
  * Interface for interacting with the DisputeBackchain.  Acquire an instance
  * via {@link BackchainClientFactory}.  
@@ -14,7 +16,10 @@ public interface DisputeBackchainClient {
   void submitDispute(Dispute dispute);
   
   /**
-   * Close the {@link Dispute} with matching dispueID
+   * Close the {@link Dispute} with matching disputeID.  
+   * 
+   * <p/>
+   * WARNING - only the disputingParty on a Dispute can Close it.  
    * 
    * @param disputeID
    */
@@ -37,31 +42,38 @@ public interface DisputeBackchainClient {
   String getOrchestrator();
   
   /**
-   * Get the Dispute submission window
-   * @return time in minutes
+   * Get the Dispute submission window.  Disputes may only be filed within this amount of time
+   * from the point the transaction in question's block was added to the blockchain.   
+   * 
+   * @return Dispute submission window, in minutes
    */
   int getDisputeSubmissionWindowInMinutes();
-
   
   /**
-   * set the Dispute submission window
-   * Available only to the Orchestrator.
+   * Set the Dispute submission window.Disputes may only be filed within this amount of time
+   * from the point the transaction in question's block was added to the blockchain.   
+   * 
+   * <p/>
+   * WARNING - only the Orchestrator is permitted to change the dispute submission window
    * 
    * @param timeInMinutes 
    */
   void setDisputeSubmissionWindowInMinutes(int timeInMinutes);
   
   /**
-   * get the filter out {@link Dispute} array
-   * @param disputeFilter 
-   * @return array of {@link Dispute}
+   * Returns all Disputes matching the given filter.
+   * 
+   * @param disputeFilter filter criteria 
+   * @return matching Disputes
    */
-  Dispute[] filterDisputes(Dispute.DisputeFilter disputeFilter);
+  List<Dispute> filterDisputes(Dispute.DisputeFilter disputeFilter);
   
   /**
-   * get the count of dispute matching 
+   * Returns the number of Disputes matching the given filter.
+   *  
    * @param disputeFilter
-   * @return
+   * @param disputeFilter filter criteria 
+   * @return number of matching Disputess
    */
   int getDisputeCount(Dispute.DisputeFilter disputeFilter);
 

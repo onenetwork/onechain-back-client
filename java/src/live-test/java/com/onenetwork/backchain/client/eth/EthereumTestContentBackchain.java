@@ -15,7 +15,7 @@ import org.junit.Test;
 import com.onenetwork.backchain.client.BackchainClientFactory;
 import com.onenetwork.backchain.client.ContentBackchainClient;
 
-public class EthereumTest {
+public class EthereumTestContentBackchain {
 
 	private String newHash() throws Exception {
 		return "0x" + Hex.encodeHexString(

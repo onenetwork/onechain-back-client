@@ -15,51 +15,51 @@ import com.onenetwork.backchain.client.ContentBackchainClient;
  */
 public class EthereumContentBackchainClient implements ContentBackchainClient {
 
-	private Web3j web3j;
-	private ContentBackchainABI contentBackchainABI;
+  private Web3j web3j;
+  private ContentBackchainABI contentBackchainABI;
 
-	/**
-	 * @param config Ethereum-based {@link BackchainClientConfig}
-	 */
-	public EthereumContentBackchainClient(EthereumConfig config) {
-		web3j = Web3j.build(new HttpService(config.getUrl()));
-		if (config.getPrivateKey() != null) {
-			Credentials credentials = Credentials.create(config.getPrivateKey());
-			contentBackchainABI = ContentBackchainABI.load(config.getContentBackchainContractAddress(), web3j, credentials, config.getGasPrice(),
-					config.getGasLimit());
-		}
-		else {
-			ClientTransactionManager tm = new ClientTransactionManager(web3j, "0x00000000000000000000000000000000");
-			contentBackchainABI = ContentBackchainABI.load(config.getContentBackchainContractAddress(), web3j, tm, config.getGasPrice(),
-					config.getGasLimit());
-		}
-	}
+  /**
+   * @param config Ethereum-based {@link BackchainClientConfig}
+   */
+  public EthereumContentBackchainClient(EthereumConfig config) {
+    web3j = Web3j.build(new HttpService(config.getUrl()));
+    if (config.getPrivateKey() != null) {
+      Credentials credentials = Credentials.create(config.getPrivateKey());
+      contentBackchainABI = ContentBackchainABI.load(config.getContentBackchainContractAddress(), web3j, credentials, config.getGasPrice(),
+          config.getGasLimit());
+    }
+    else {
+      ClientTransactionManager tm = new ClientTransactionManager(web3j, "0x00000000000000000000000000000000");
+      contentBackchainABI = ContentBackchainABI.load(config.getContentBackchainContractAddress(), web3j, tm, config.getGasPrice(),
+          config.getGasLimit());
+    }
+  }
 
-	
-	
-	@Override
-	public String getHash(long index) {
-		return EthereumHelper.await(() -> EthereumHelper.hashBytesToString(contentBackchainABI.getHash(new Uint256(index)).get()));
-	}
+  
+  
+  @Override
+  public String getHash(long index) {
+    return EthereumHelper.await(() -> EthereumHelper.hashBytesToString(contentBackchainABI.getHash(new Uint256(index)).get()));
+  }
 
-	@Override
-	public String getOrchestrator() {
-		return EthereumHelper.await(() -> contentBackchainABI.orchestrator().get().toString());
-	}
+  @Override
+  public String getOrchestrator() {
+    return EthereumHelper.await(() -> contentBackchainABI.orchestrator().get().toString());
+  }
 
-	@Override
-	public long hashCount() {
-		return EthereumHelper.await(() -> contentBackchainABI.hashCount().get().getValue().longValue());
-	}
+  @Override
+  public long hashCount() {
+    return EthereumHelper.await(() -> contentBackchainABI.hashCount().get().getValue().longValue());
+  }
 
-	@Override
-	public void post(String hash) {
-	  EthereumHelper.await(() -> contentBackchainABI.post(EthereumHelper.hashStringToBytes(hash)).get());
-	}
+  @Override
+  public void post(String hash) {
+    EthereumHelper.await(() -> contentBackchainABI.post(EthereumHelper.hashStringToBytes(hash)).get());
+  }
 
-	@Override
-	public boolean verify(String hash) {
-		return EthereumHelper.await(() -> contentBackchainABI.verify(EthereumHelper.hashStringToBytes(hash)).get().getValue());
-	}
+  @Override
+  public boolean verify(String hash) {
+    return EthereumHelper.await(() -> contentBackchainABI.verify(EthereumHelper.hashStringToBytes(hash)).get().getValue());
+  }
 
 }

@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -17,9 +18,9 @@ import com.onenetwork.backchain.client.Dispute.Reason;
 import com.onenetwork.backchain.client.Dispute.State;
 import com.onenetwork.backchain.client.DisputeBackchainClient;
 
-public class EthereumTestDBC {
+public class EthereumTestDisputeBackchain {
 
-  public EthereumTestDBC() {
+  public EthereumTestDisputeBackchain() {
   }
 
   @Test
@@ -51,8 +52,8 @@ public class EthereumTestDBC {
     String disputeID = EthereumHelper.newHash();
     DisputeBackchainClient dbc = BackchainClientFactory.newDisputeBackchainClient(geEthereumConfig());
     DisputeFilter disputeFilter = new DisputeFilter().setReasons(new Reason[] { Reason.HASH_NOT_FOUND });
-    Dispute[] resultDisputes = dbc.filterDisputes(disputeFilter);
-    if (resultDisputes.length > 0) {
+    List<Dispute> resultDisputes = dbc.filterDisputes(disputeFilter);
+    if (resultDisputes.size() > 0) {
       for (Dispute dispute : resultDisputes) {
         assertEquals(Reason.HASH_NOT_FOUND, dispute.getReason());
       }
@@ -62,7 +63,7 @@ public class EthereumTestDBC {
         new Dispute().setDisputeID(disputeID).setDisputedTransactionID(disputeTransactionID)
           .setReason(Reason.HASH_NOT_FOUND));
       resultDisputes = dbc.filterDisputes(disputeFilter);
-      if (resultDisputes.length > 0) {
+      if (resultDisputes.size() > 0) {
         for (Dispute dispute : resultDisputes) {
           assertEquals(Reason.HASH_NOT_FOUND, dispute.getReason());
         }
@@ -99,8 +100,8 @@ public class EthereumTestDBC {
       .setSubmittedStartDate(submittedStartDate).setSubmittedEndDate(submittedEndDate).setStates(State.values())
       .setReasons(reasons);
     DisputeBackchainClient dbc = BackchainClientFactory.newDisputeBackchainClient(geEthereumConfig());
-    Dispute[] resultDisputes = dbc.filterDisputes(disputeFilter);
-    assertEquals(resultDisputes.length, 3);
+    List<Dispute> resultDisputes = dbc.filterDisputes(disputeFilter);
+    assertEquals(resultDisputes.size(), 3);
   }
 
   private Dispute submitDispute(Dispute dispute) {

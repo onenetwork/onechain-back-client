@@ -3,6 +3,7 @@
 package com.onenetwork.backchain.client.eth;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -54,10 +55,6 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
     }
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#submitDispute(com.onenetwork.backchain.client.Dispute)
-   */
   @Override
   public void submitDispute(Dispute dispute) {
     if (EthereumHelper.isNullOrEmpty(dispute.getDisputeID())) {
@@ -70,13 +67,13 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
       dispute.setDisputingParty(credentials.getAddress());
     }
     else if (dispute.getDisputingParty().equals(credentials.getAddress())) {
-      throw new IllegalArgumentException("Cannot submit dispute. Invalid DisputingParty value");
+      throw new IllegalArgumentException("Cannot submit dispute, as your address does not match the Disputing Party address");
     }
     if (EthereumHelper.isNullOrEmpty(dispute.getDisputedTransactionID())) {
-      throw new IllegalArgumentException("DisputedTransactionId is required field");
+      throw new IllegalArgumentException("DisputedTransactionId is a required field");
     }
     if (EthereumHelper.isNullOrEmpty(dispute.getReason())) {
-      throw new IllegalArgumentException("Reason is required field");
+      throw new IllegalArgumentException("Reason is a required field");
     }
     EthereumHelper.await(
       () -> disputeBackchainABI.submitDispute(
@@ -87,34 +84,22 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
         new Utf8String(dispute.getReason().toString())).get());
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#closeDispute(java.lang.String)
-   */
   @Override
   public void closeDispute(String disputeID) {
     if (EthereumHelper.isNullOrEmpty(disputeID)) {
-      new IllegalArgumentException("disputeID is a required. It cannot be null or empty");
+      new IllegalArgumentException("disputeID is required. It cannot be null or empty");
     }
     EthereumHelper.await(() -> disputeBackchainABI.closeDispute(EthereumHelper.hashStringToBytes(disputeID)));
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#getDispute(java.lang.String)
-   */
   @Override
   public Dispute getDispute(String disputeID) {
     if (EthereumHelper.isNullOrEmpty(disputeID)) {
-      new IllegalArgumentException("disputeID is a required. It cannot be null or empty");
+      new IllegalArgumentException("disputeID is required. It cannot be null or empty");
     }
     return EthereumHelper.await(() -> getDispute(EthereumHelper.hashStringToBytes(disputeID), disputeID));
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#getDisputeCount(com.onenetwork.backchain.client.Dispute.DisputeFilter)
-   */
   @Override
   public int getDisputeCount(DisputeFilter disputeFilter) {
     return getFilterDisputeIDs(disputeFilter).size();
@@ -172,40 +157,29 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
     return dispute;
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#filterDisputes(com.onenetwork.backchain.client.Dispute.DisputeFilter)
-   */
   @Override
-  public Dispute[] filterDisputes(DisputeFilter disputeFilter) {
+  public List<Dispute> filterDisputes(DisputeFilter disputeFilter) {
     List<Bytes32> disputeIDHashList = getFilterDisputeIDs(disputeFilter);
     if (disputeIDHashList.size() <= 0) {
-      return new Dispute[0];
+      return new ArrayList<>();
     }
 
     return EthereumHelper.await(() -> {
-      Dispute[] disputes = new Dispute[disputeIDHashList.size()];
-      for (int i = 0; i < disputes.length; i++) {
-        disputes[i] = getDispute(disputeIDHashList.get(i), EthereumHelper.hashBytesToString(disputeIDHashList.get(i)));
+      int disputeCount = disputeIDHashList.size();
+      List<Dispute> disputes = new ArrayList<>(disputeCount);
+      for (int i = 0; i < disputeCount; i++) {
+        disputes.add(getDispute(disputeIDHashList.get(i), EthereumHelper.hashBytesToString(disputeIDHashList.get(i))));
       }
       return disputes;
     });
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#getDisputeSubmissionWindowInMinutes()
-   */
   @Override
   public int getDisputeSubmissionWindowInMinutes() {
     return EthereumHelper
       .await(() -> disputeBackchainABI.getDisputeSubmissionWindowInMinutes().get().getValue().intValue());
   }
 
-  /**
-   * (non-Javadoc)
-   * @see com.onenetwork.backchain.client.DisputeBackchainClient#setDisputeSubmissionWindowInMinutes(int)
-   */
   @Override
   public void setDisputeSubmissionWindowInMinutes(int timeInMinutes) {
     EthereumHelper
