@@ -101,7 +101,7 @@ public class EthereumTestDisputeBackchain {
       .setReasons(reasons);
     DisputeBackchainClient dbc = BackchainClientFactory.newDisputeBackchainClient(geEthereumConfig());
     List<Dispute> resultDisputes = dbc.filterDisputes(disputeFilter);
-    assertEquals(resultDisputes.size(), 3);
+    assertEquals(3, resultDisputes.size());
   }
 
   private Dispute submitDispute(Dispute dispute) {
