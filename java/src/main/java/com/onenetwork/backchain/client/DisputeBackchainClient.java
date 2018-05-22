@@ -57,5 +57,12 @@ public interface DisputeBackchainClient {
    * @return array of {@link Dispute}
    */
   Dispute[] filterDisputes(Dispute.DisputeFilter disputeFilter);
+  
+  /**
+   * get the count of dispute matching 
+   * @param disputeFilter
+   * @return
+   */
+  int getDisputeCount(Dispute.DisputeFilter disputeFilter);
 
 }

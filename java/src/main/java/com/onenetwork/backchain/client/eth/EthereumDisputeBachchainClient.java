@@ -111,6 +111,39 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
     return EthereumHelper.await(() -> getDispute(EthereumHelper.hashStringToBytes(disputeID), disputeID));
   }
 
+  /**
+   * (non-Javadoc)
+   * @see com.onenetwork.backchain.client.DisputeBackchainClient#getDisputeCount(com.onenetwork.backchain.client.Dispute.DisputeFilter)
+   */
+  @Override
+  public int getDisputeCount(DisputeFilter disputeFilter) {
+    return getFilterDisputeIDs(disputeFilter).size();
+  }
+
+  private List<Bytes32> getFilterDisputeIDs(DisputeFilter disputeFilter) {
+    DynamicArray<Bytes32> disputeIDHash = EthereumHelper.await(
+      () -> disputetBackchainABI.filterDisputeByHeaders(
+        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputeIDs()),
+        EthereumHelper.convertAndGetAddressDA(disputeFilter.getDisputingParties()),
+        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputedTransactionIDs()),
+        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputedBusinessTransactionIDs())).get());
+
+    if (disputeIDHash.getValue().size() <= 0) {
+      return disputeIDHash.getValue();
+    }
+    DynamicArray<Bytes32> disputeIDHashDetail = EthereumHelper.await(
+      () -> disputetBackchainABI.filterDisputeByDetail(
+        disputeIDHash,
+        EthereumHelper.getTimeInUint256(disputeFilter.getSubmittedStartDate()),
+        EthereumHelper.getTimeInUint256(disputeFilter.getSubmittedEndDate()),
+        EthereumHelper.getTimeInUint256(disputeFilter.getCloseStartDate()),
+        EthereumHelper.getTimeInUint256(disputeFilter.getCloseEndDate()),
+        EthereumHelper.convertAndGetUint256DA(disputeFilter.getStates()),
+        EthereumHelper.convertAndGetUint256DA(disputeFilter.getReasons())).get());
+
+    return disputeIDHashDetail.getValue();
+  }
+
   private Dispute getDispute(Bytes32 disputeIDHash, String disputeID) throws DecoderException {
     Dispute dispute = new Dispute().setDisputeID(disputeID);
     @SuppressWarnings("rawtypes")
@@ -126,15 +159,15 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
     }
     dispute.setDisputedBusinessTransactionIDs(businessTrasactionIDs);
     Calendar submitDateCal = Calendar.getInstance();
-    submitDateCal.setTimeInMillis(((BigInteger)(detailData.get(0).getValue())).longValue());
+    submitDateCal.setTimeInMillis(((BigInteger) (detailData.get(0).getValue())).longValue());
     dispute.setSubmittedDate(submitDateCal);
-    long closeTime = ((BigInteger)(detailData.get(1).getValue())).longValue();
+    long closeTime = ((BigInteger) (detailData.get(1).getValue())).longValue();
     if (closeTime > 0L) {
       Calendar closedDateCal = Calendar.getInstance();
       closedDateCal.setTimeInMillis(closeTime);
       dispute.setCloseDate(closedDateCal);
     }
-    dispute.setState(Dispute.State.valueOf((String)detailData.get(2).getValue()));
+    dispute.setState(Dispute.State.valueOf((String) detailData.get(2).getValue()));
     dispute.setReason(Dispute.Reason.valueOf((String) detailData.get(3).getValue()));
     return dispute;
   }
@@ -145,28 +178,7 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
    */
   @Override
   public Dispute[] filterDisputes(DisputeFilter disputeFilter) {
-    DynamicArray<Bytes32> disputeIDHash = EthereumHelper.await(
-      () -> disputetBackchainABI.filterDisputeByHeaders(
-        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputeIDs()),
-        EthereumHelper.convertAndGetAddressDA(disputeFilter.getDisputingParties()),
-        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputedTransactionIDs()),
-        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputedBusinessTransactionIDs())).get());
-
-    if (disputeIDHash.getValue().size() <= 0) {
-      return new Dispute[0];
-    }
-    DynamicArray<Bytes32> disputeIDHashDetail = EthereumHelper.await(
-      () -> disputetBackchainABI.filterDisputeByDetail(
-        disputeIDHash,
-        EthereumHelper.getTimeInUint256(disputeFilter.getSubmittedStartDate()),
-        EthereumHelper.getTimeInUint256(disputeFilter.getSubmittedEndDate()),
-        EthereumHelper.getTimeInUint256(disputeFilter.getCloseStartDate()),
-        EthereumHelper.getTimeInUint256(disputeFilter.getCloseEndDate()),
-        EthereumHelper.convertAndGetUint256DA(disputeFilter.getStates()),
-        EthereumHelper.convertAndGetUint256DA(disputeFilter.getReasons())).get());
-
-    List<Bytes32> disputeIDHashList = disputeIDHashDetail.getValue();
-
+    List<Bytes32> disputeIDHashList = getFilterDisputeIDs(disputeFilter);
     if (disputeIDHashList.size() <= 0) {
       return new Dispute[0];
     }
@@ -196,7 +208,8 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
    */
   @Override
   public void setDisputeSubmissionWindowInMinutes(int timeInMinutes) {
-    EthereumHelper.await(() -> disputetBackchainABI.setDisputeSubmissionWindowInMinutes(new Uint256(timeInMinutes)).get());
+    EthereumHelper
+      .await(() -> disputetBackchainABI.setDisputeSubmissionWindowInMinutes(new Uint256(timeInMinutes)).get());
   }
 
   @Override
