@@ -24,7 +24,7 @@ public class EthereumTest {
 
 	@Test
 	public void testOrchestrator() throws Exception {
-		EthereumConfig cfg = new EthereumConfig().setUrl("http://backchain-vagrant.onenetwork.com:8545")
+		EthereumConfig cfg = new EthereumConfig().setUrl("http://192.168.201.55:8545")
 				.setContentBackchainContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
 				.setDisputeBackchainContractAddress("0x4a6886a515a4b800f4591a6d6a60e6004a3645ab")
 				.setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
@@ -47,7 +47,7 @@ public class EthereumTest {
 
 	@Test
 	public void testParticipant() throws Exception {
-		EthereumConfig cfg = new EthereumConfig().setUrl("http://backchain-vagrant.onenetwork.com:8545")
+		EthereumConfig cfg = new EthereumConfig().setUrl("http://192.168.201.55:8545")
 				.setContentBackchainContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
 				//.setPrivateKey("0x69bc764651de75758c489372c694a39aa890f911ba5379caadc08f44f8173051")
 				.setGasPrice(BigInteger.valueOf(0L)).setGasLimit(BigInteger.valueOf(999999L));

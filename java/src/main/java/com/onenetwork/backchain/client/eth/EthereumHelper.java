@@ -1,5 +1,6 @@
 package com.onenetwork.backchain.client.eth;
 
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -17,7 +18,6 @@ import org.web3j.abi.datatypes.generated.Uint256;
 public final class EthereumHelper {
 
   /**
-   * TODO complete constructor documentation
    * @throws InstantiationException 
    *
    */
@@ -52,7 +52,7 @@ public final class EthereumHelper {
 
   public static String newHash() throws Exception {
     return "0x" + Hex
-      .encodeHexString(Digest.getInstance("SHA256").digest(("" + new Date().getTime() + Math.random()).getBytes()));
+      .encodeHexString(DIGEST.digest(("" + new Date().getTime() + Math.random()).getBytes()));
   }
 
   @SuppressWarnings("unchecked")
@@ -67,7 +67,7 @@ public final class EthereumHelper {
       dynamicBytes32 = new DynamicArray<>(bytes32Array);
     }
     else {
-      dynamicBytes32 = DynamicArray.empty(Bytes32.TYPE_NAME);
+      dynamicBytes32 = DynamicArray.empty(Bytes32.TYPE_NAME + "32[]");
     }
     return dynamicBytes32;
   }
@@ -84,7 +84,7 @@ public final class EthereumHelper {
       addressDA = new DynamicArray<>(addresses);
     }
     else {
-      addressDA = DynamicArray.empty(Address.TYPE_NAME);
+      addressDA = DynamicArray.empty(Address.TYPE_NAME + "[]");
     }
     return addressDA;
   }
@@ -100,7 +100,7 @@ public final class EthereumHelper {
       uint256DA = new DynamicArray<>(uint256Array);
     }
     else {
-      uint256DA = DynamicArray.empty(Uint256.TYPE_NAME);
+      uint256DA = DynamicArray.empty(Uint256.TYPE_NAME + "256[]");
     }
     return uint256DA;
   }
@@ -119,4 +119,13 @@ public final class EthereumHelper {
     return new Uint256(cal == null ? 0 : cal.getTimeInMillis());
   }
 
+  private static MessageDigest DIGEST;
+  static {
+    try {
+      DIGEST = MessageDigest.getInstance("SHA-256");
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

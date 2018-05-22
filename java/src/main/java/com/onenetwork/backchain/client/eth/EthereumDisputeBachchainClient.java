@@ -2,6 +2,7 @@
  */
 package com.onenetwork.backchain.client.eth;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
     else {
       ClientTransactionManager tm = new ClientTransactionManager(web3j, "0x00000000000000000000000000000000");
       disputetBackchainABI = DisputeBackchainABI
-        .load(config.getContentBackchainContractAddress(), web3j, tm, config.getGasPrice(), config.getGasLimit());
+        .load(config.getDisputeBackchainContractAddress(), web3j, tm, config.getGasPrice(), config.getGasLimit());
     }
   }
 
@@ -83,7 +84,7 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
         new Address(dispute.getDisputingParty()),
         EthereumHelper.hashStringToBytes(dispute.getDisputedTransactionID()),
         EthereumHelper.convertAndGetBytes32DA(dispute.getDisputedBusinessTransactionIDs()),
-        new Utf8String(dispute.getReason().toString())));
+        new Utf8String(dispute.getReason().toString())).get());
   }
 
   /**
@@ -116,25 +117,25 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
     List<Type> headerData = EthereumHelper.await(() -> disputetBackchainABI.getDisputeHeader(disputeIDHash).get());
     @SuppressWarnings("rawtypes")
     List<Type> detailData = EthereumHelper.await(() -> disputetBackchainABI.getDisputeDetail(disputeIDHash).get());
-    dispute.setDisputingParty(((Address) headerData.get(0).getValue()).toString())
-      .setDisputedTransactionID(EthereumHelper.hashBytesToString((Bytes32) headerData.get(1).getValue()));
-    List<?> businessTransactionList = ((DynamicArray<?>) headerData.get(2).getValue()).getValue();
+    dispute.setDisputingParty(headerData.get(0).toString())
+      .setDisputedTransactionID(EthereumHelper.hashBytesToString((Bytes32) headerData.get(1)));
+    List<?> businessTransactionList = (List<?>) headerData.get(2).getValue();
     String[] businessTrasactionIDs = new String[businessTransactionList.size()];
     for (int i = 0; i < businessTrasactionIDs.length; i++) {
       businessTrasactionIDs[i] = EthereumHelper.hashBytesToString((Bytes32) businessTransactionList.get(i));
     }
     dispute.setDisputedBusinessTransactionIDs(businessTrasactionIDs);
     Calendar submitDateCal = Calendar.getInstance();
-    submitDateCal.setTimeInMillis(((Uint256) detailData.get(0).getValue()).getValue().longValue());
+    submitDateCal.setTimeInMillis(((BigInteger)(detailData.get(0).getValue())).longValue());
     dispute.setSubmittedDate(submitDateCal);
-    long closeTime = ((Uint256) detailData.get(1).getValue()).getValue().longValue();
+    long closeTime = ((BigInteger)(detailData.get(1).getValue())).longValue();
     if (closeTime > 0L) {
       Calendar closedDateCal = Calendar.getInstance();
       closedDateCal.setTimeInMillis(closeTime);
       dispute.setCloseDate(closedDateCal);
     }
-    dispute.setState(Dispute.State.valueOf(((Utf8String) detailData.get(2).getValue()).getValue()));
-    dispute.setReason(Dispute.Reason.valueOf(((Utf8String) detailData.get(3).getValue()).getValue()));
+    dispute.setState(Dispute.State.valueOf((String)detailData.get(2).getValue()));
+    dispute.setReason(Dispute.Reason.valueOf((String) detailData.get(3).getValue()));
     return dispute;
   }
 
@@ -195,7 +196,7 @@ public class EthereumDisputeBachchainClient implements DisputeBackchainClient {
    */
   @Override
   public void setDisputeSubmissionWindowInMinutes(int timeInMinutes) {
-    EthereumHelper.await(() -> disputetBackchainABI.setDisputeSubmissionWindowInMinutes(new Uint256(timeInMinutes)));
+    EthereumHelper.await(() -> disputetBackchainABI.setDisputeSubmissionWindowInMinutes(new Uint256(timeInMinutes)).get());
   }
 
   @Override
