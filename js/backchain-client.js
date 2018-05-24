@@ -111,7 +111,9 @@ module.exports = {
             }
         }
         var contentContract = new web3.eth.Contract(abi, config.contentBackchainContractAddress, {
-            from: config.fromAddress
+            from: config.fromAddress,
+            gasPrice: config.gasPrice,
+            gas: config.gas
         });
         return {
             config: config,
@@ -372,7 +374,8 @@ module.exports = {
         }
         var disputeContract = new web3.eth.Contract(abi, config.disputeBackchainContractAddress, {
             from: config.fromAddress,
-            gas: 1000000
+            gasPrice: config.gasPrice,
+            gas: config.gas
         });
 
         // private functions
