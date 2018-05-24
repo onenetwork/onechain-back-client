@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -17,9 +18,9 @@ import com.onenetwork.backchain.client.Dispute.Reason;
 import com.onenetwork.backchain.client.Dispute.State;
 import com.onenetwork.backchain.client.DisputeBackchainClient;
 
-public class EthereumTestDBC {
+public class EthereumTestDisputeBackchain {
 
-  public EthereumTestDBC() {
+  public EthereumTestDisputeBackchain() {
   }
 
   @Test
@@ -51,8 +52,8 @@ public class EthereumTestDBC {
     String disputeID = EthereumHelper.newHash();
     DisputeBackchainClient dbc = BackchainClientFactory.newDisputeBackchainClient(geEthereumConfig());
     DisputeFilter disputeFilter = new DisputeFilter().setReasons(new Reason[] { Reason.HASH_NOT_FOUND });
-    Dispute[] resultDisputes = dbc.filterDisputes(disputeFilter);
-    if (resultDisputes.length > 0) {
+    List<Dispute> resultDisputes = dbc.filterDisputes(disputeFilter);
+    if (resultDisputes.size() > 0) {
       for (Dispute dispute : resultDisputes) {
         assertEquals(Reason.HASH_NOT_FOUND, dispute.getReason());
       }
@@ -62,7 +63,7 @@ public class EthereumTestDBC {
         new Dispute().setDisputeID(disputeID).setDisputedTransactionID(disputeTransactionID)
           .setReason(Reason.HASH_NOT_FOUND));
       resultDisputes = dbc.filterDisputes(disputeFilter);
-      if (resultDisputes.length > 0) {
+      if (resultDisputes.size() > 0) {
         for (Dispute dispute : resultDisputes) {
           assertEquals(Reason.HASH_NOT_FOUND, dispute.getReason());
         }
@@ -99,8 +100,8 @@ public class EthereumTestDBC {
       .setSubmittedStartDate(submittedStartDate).setSubmittedEndDate(submittedEndDate).setStates(State.values())
       .setReasons(reasons);
     DisputeBackchainClient dbc = BackchainClientFactory.newDisputeBackchainClient(geEthereumConfig());
-    Dispute[] resultDisputes = dbc.filterDisputes(disputeFilter);
-    assertEquals(resultDisputes.length, 3);
+    List<Dispute> resultDisputes = dbc.filterDisputes(disputeFilter);
+    assertEquals(3, resultDisputes.size());
   }
 
   private Dispute submitDispute(Dispute dispute) {
@@ -148,7 +149,7 @@ public class EthereumTestDBC {
       .setContentBackchainContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
       .setDisputeBackchainContractAddress("0x4a6886a515a4b800f4591a6d6a60e6004a3645ab")
       .setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
-      .setGasPrice(BigInteger.valueOf(0L)).setGasLimit(BigInteger.valueOf(6000000l));
+      .setGasPrice(BigInteger.valueOf(20000000000L)).setGasLimit(BigInteger.valueOf(4300000L));
   }
 
 }

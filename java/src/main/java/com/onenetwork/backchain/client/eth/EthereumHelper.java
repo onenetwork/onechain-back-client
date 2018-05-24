@@ -6,7 +6,6 @@ import java.util.Date;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.jcajce.provider.digest.SHA224.Digest;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.generated.Bytes32;
@@ -15,7 +14,7 @@ import org.web3j.abi.datatypes.generated.Uint256;
 /**
  * Helper class for Ethereum
  */
-public final class EthereumHelper {
+final class EthereumHelper {
 
   /**
    * @throws InstantiationException 
