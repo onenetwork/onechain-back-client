@@ -39,8 +39,10 @@ final class EthereumHelper {
   }
 
   public static Bytes32 hashStringToBytes(String hash) throws DecoderException {
-    return new Bytes32(
-      Hex.decodeHex((hash.toUpperCase().startsWith("0X") ? hash.substring(2, hash.length()) : hash).toCharArray()));
+    if (!hash.toUpperCase().startsWith("0X")) {
+      throw new IllegalArgumentException("Hash " + hash + " must begin with 0x");
+    }
+    return new Bytes32(Hex.decodeHex(hash.substring(2, hash.length()).toCharArray()));
   }
 
   public static String hashBytesToString(Bytes32 bytes) throws DecoderException {

@@ -26,87 +26,43 @@ npm install -P @onenetwork/one-backchain-client --no-bin-links
 ```
 
 
-### Sample Usage: Content Backchain
+### Sample Usage
 
 ```javascript
 oneBcClient = require('@onenetwork/one-backchain-client');
 
 /**
- * Instantiate the content backchain client,
+ * Instantiate the backchain client,
  * providing real values for url and contractAddress
  */
-var contentBackchain = oneBcClient.createContentBcClient({ 
+var bc = oneBcClient({ 
   blockchain: 'eth', 
   url: 'http://192.168.201.55:8545', 
-  contentBackchainContractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138",
-  privateKey: "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
-  gas: 10000,
-  gasPrice: '0.00 USD'
+  contractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138"
 });
 
 /**
  * Invoke the hashCount API to return the total number of hashes stored
- * on the Content Backchain
+ * on the Backchain
  */
-contentBackchain.hashCount().then(function(hashCount) {
+bc.hashCount().then(function(hashCount) {
   console.info("Backchain hashCount : " + hashCount);
 });
 
 /**
  * Invoke the verify function to see if a particular hash value
- * is stored on the Content Backchain.
+ * is stored on the Backchain.
  */
 var sampleHash = '0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3';
-contentBackchain.verify(sampleHash).then(function(verified) {
-  console.info(sampleHash + " is on the ContentBackchain? " + verified);
+bc.verify(sampleHash).then(function(verified) {
+  console.info(sampleHash + " is on the Backchain? " + verified);
 });
 ```
 
 Sample output:
 ```
-ContentBackchain hashCount is: 13
-0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3 is on the ContentBackchain? true
-```
-### Sample Usage: Dispute Backchain
-
-```javascript
-oneBcClient = require('@onenetwork/one-backchain-client');
-
-/**
- * Instantiate the content backchain client,
- * providing real values for url and contractAddress
- */
-var disputeBackchain = oneBcClient.createDisputeBcClient({ 
-  blockchain: 'eth', 
-  url: 'http://192.168.201.55:8545', 
-  disputeBackchainContractAddress: "0x4a6886a515a4b800f4591a6d6a60e6004a3645ab",
-  privateKey: "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
-  gas: 10000,
-  gasPrice: '0.00 USD'
-});
-
-/**
- * Invoke the hashCount API to return the total number of hashes stored
- * on the Content Backchain
- */
-disputeBackchain.submitDispute().then(function({}) {
-  console.info("Backchain hashCount : " + hashCount);
-});
-
-/**
- * Invoke the verify function to see if a particular hash value
- * is stored on the Content Backchain.
- */
-var sampleHash = '0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3';
-contentBackchain.verify(sampleHash).then(function(verified) {
-  console.info(sampleHash + " is on the ContentBackchain? " + verified);
-});
-```
-
-Sample output:
-```
-ContentBackchain hashCount is: 13
-0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3 is on the ContentBackchain? true
+Backchain hashCount is: 13
+0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3 is on the Backchain? true
 ```
 
 
@@ -124,18 +80,9 @@ a new client when called.  It expects a single parameter of the following form:
   
   // http(s) url of a node in the blockchain.
   url: 'http://localhost:8545', 
-
-  // when using eth as blockchain, provide the address to which the Contract Backchain etherium contract has been bound in the Ethereum blockchain
-  contentBackchainContractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2",
   
-  // when using eth as blockchain, provide the address to which the Dipsute Backchain etherium contract has been bound in the Ethereum blockchain
-  disputeBackchainContractAddress: "0x4a6886a515a4b800f4591a6d6a60e6004a3645ab",
-  
-  //The maximum gas provided for a transaction (gas limit).
-  gas: 10000,
-  
-  //The gas price in wei to use for transactions.
-  gasPrice: '0.00'
+  // when using eth as blockchain, provide the address to which the Backchain etherium contract has been bound in the Ethereum blockchain
+  contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2"
 }
 ```
 
