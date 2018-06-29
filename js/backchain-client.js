@@ -11,8 +11,10 @@ module.exports = {
     createContentBcClient: function(config) {
         if (config.blockchain == 'eth') {
             return eth.createContentBcClient(config);
-        }else{
+        } else if(config.blockchain == 'hyp'){
             return hyp.createContentBcClient(config);
+        } else{
+            throw new Error('blockchain not supported: ' + config.blockchain);
         }
 
     },
@@ -20,7 +22,7 @@ module.exports = {
     createDisputeBcClient: function(config) {
         if (config.blockchain == 'eth') {
             return eth.createDisputeBcClient(config);
-        }else{
+        } else{
             throw new Error('blockchain not supported: ' + config.blockchain);
         }
     }
