@@ -3,6 +3,8 @@ package com.onenetwork.backchain.client;
 import com.onenetwork.backchain.client.eth.EthereumConfig;
 import com.onenetwork.backchain.client.eth.EthereumContentBackchainClient;
 import com.onenetwork.backchain.client.eth.EthereumDisputeBackchainClient;
+import com.onenetwork.backchain.client.hyp.HyperledgerConfig;
+import com.onenetwork.backchain.client.hyp.HyperledgerContentBackchainClient;
 
 /**
  * Factory for acquiring instances of {@link ContentBackchainClient} and 
@@ -24,6 +26,8 @@ public class BackchainClientFactory {
   public static ContentBackchainClient newContentBackchainClient(BackchainClientConfig config) {
     if (config instanceof EthereumConfig) {
       return new EthereumContentBackchainClient((EthereumConfig) config);
+    }else if (config instanceof HyperledgerConfig) {
+	  return new HyperledgerContentBackchainClient((HyperledgerConfig) config);
     }
 
     throw new IllegalArgumentException("Unsupported configuration: " + config);
