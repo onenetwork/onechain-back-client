@@ -19,8 +19,8 @@ import com.onenetwork.backchain.client.eth.EthereumConfig;
 
 public class HyperledgerTestContentBackchain {
   
-  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA3MjAzMDQsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzA2ODQzMDR9.s8ECySgPEmp-7Joups39_LX7s8nyTkBbNAgv-r8UBxU";
-  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA3MjAzMTAsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMwNjg0MzEwfQ.8UZN1_jWFbAIkbd37HXD1CSALVi9uohNF0eYY-20ptM";
+  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA4OTAyNzEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzA4NTQyNzF9.B3eDgGcgvLxUWvjbuAkjgWPQS5j4EXmKkpgjd-BbGy0";
+  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA4OTAyNzMsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMwODU0MjczfQ.RKbU1ker32YLncl8AIFAhEPt7qS0EWwUNsxXT7MbJLs";
 
 	private String newHash() throws Exception {
 		return "0x" + Hex.encodeHexString(
@@ -29,9 +29,9 @@ public class HyperledgerTestContentBackchain {
 
 	@Test
 	public void testOrchestrator() throws Exception { 
-		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000").setPrivateKey(orchestratorKey);
+		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.57:4000").setToken(orchestratorKey);
 
-	    ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
+	  ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
 		long initialHashCount = bk.hashCount();
 		//assertEquals("0xece1355c30af00ff4f03f0e37f7822ce4b660aa3", bk.getOrchestrator());
@@ -48,7 +48,7 @@ public class HyperledgerTestContentBackchain {
 
 	@Test
 	public void testParticipant() throws Exception {
-		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000").setPrivateKey(participantKey);
+		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.57:4000").setToken(participantKey);
 		ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
 		bk.hashCount();
@@ -64,8 +64,8 @@ public class HyperledgerTestContentBackchain {
 
 	@Test
 	public void testUnableToConnect() throws Exception {
-	  HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000")
-      .setPrivateKey(orchestratorKey);
+	  HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://backchain-vagrant.onenetwork.com:4000")
+      .setToken(orchestratorKey);
 		ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
 		try {

@@ -12,7 +12,7 @@ var sampleHashString = sampleHash1.substring(2);
 var contractConfig = {
     blockchain: 'hyp',
     url: 'http://localhost:4000',
-    privateKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzAyMTM4MzksInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzAxNzc4Mzl9.h5ARvYV4jLMMQpFJNBvinaU1tD1MkKWiengYzzOG1w8'
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzAyMTM4MzksInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzAxNzc4Mzl9.h5ARvYV4jLMMQpFJNBvinaU1tD1MkKWiengYzzOG1w8'
 };
 
 

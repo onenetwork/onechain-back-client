@@ -36,7 +36,7 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
 
   public HyperledgerContentBackchainClient(HyperledgerConfig config) {
     client = HttpClientBuilder.create().build();
-    authHeader = new BasicHeader("Authorization", "Bearer " + config.getPrivateKey());
+    authHeader = new BasicHeader("Authorization", "Bearer " + config.getToken());
     baseUrl = config.getUrl();
   }
 

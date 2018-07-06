@@ -20,7 +20,7 @@ module.exports = {
                 'json': true,
                 headers: {
                     'content-type' : 'application/json',
-                    'authorization': 'Bearer '+config.privateKey
+                    'authorization': 'Bearer ' + config.token
                 }
             };
 
@@ -49,7 +49,7 @@ module.exports = {
                 return executeRequest('post', hash);
             },
             verify: function(hash) {
-              return executeRequest('verify', hash);
+                return executeRequest('verify', hash);
             }            
         };
     },

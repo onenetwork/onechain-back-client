@@ -9,7 +9,7 @@ import com.onenetwork.backchain.client.BackchainClientConfig;
 public class HyperledgerConfig implements BackchainClientConfig {
 
 	private String url;
-	private String privateKey;
+	private String token;
 
 	/**
 	 * Returns the HTTP URL of the Hyperledger fabric backchain
@@ -30,23 +30,23 @@ public class HyperledgerConfig implements BackchainClientConfig {
 	}
 
 	/**
-	 * Returns the private key of the Hyperledger fabric client, as a base64-encoded string
-	 * starting with "0x".  For example, "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
-	 * @return private key of the Hyperledger fabric client, as a base64-encoded string starting with "0x"
+	 * Returns the token of the Hyperledger fabric client, as a JSON Web Token
+	 * starting with "eyJhbGci".  For example, "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
+	 * @return token of the Hyperledger fabric client, as a base64-encoded string starting with "eyJhbGci"
 	 */
-	public String getPrivateKey() {
-		return privateKey;
+	public String getToken() {
+		return token;
 	}
 
 	/**
-	 * Sets the private key of the Hyperledger fabric client, as a base64-encoded string
-	 * starting with "0x".  For example, "0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1"
+	 * Sets the token of the Hyperledger fabric client, as a JSON Web Token
+	 * starting with "eyJhbGci".  For example, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA4OTAyNzEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzA4NTQyNzF9.B3eDgGcgvLxUWvjbuAkjgWPQS5j4EXmKkpgjd-BbGy0"
 	 * Needed only if you intend to post to the backchain.  If you are only verifying, you can skip this.
-	 * @param privateKey private key of the Hyperledger fabric client, as a base64-encoded string starting with "0x"
+	 * @param privateKey token of the Hyperledger fabric client, as a JSON Web Token starting with "eyJhbGci"
 	 * @return this config object
 	 */
-	public HyperledgerConfig setPrivateKey(String privateKey) {
-		this.privateKey = privateKey;
+	public HyperledgerConfig setToken(String token) {
+		this.token = token;
 		return this;
 	}
 
