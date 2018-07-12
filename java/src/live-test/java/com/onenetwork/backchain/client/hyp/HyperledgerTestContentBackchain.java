@@ -19,8 +19,8 @@ import com.onenetwork.backchain.client.eth.EthereumConfig;
 
 public class HyperledgerTestContentBackchain {
   
-  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA4OTAyNzEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzA4NTQyNzF9.B3eDgGcgvLxUWvjbuAkjgWPQS5j4EXmKkpgjd-BbGy0";
-  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzA4OTAyNzMsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMwODU0MjczfQ.RKbU1ker32YLncl8AIFAhEPt7qS0EWwUNsxXT7MbJLs";
+  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0MTk2MjYsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzEzODM2MjZ9.aFladrg_PFROVB8hBV4ET4Lf8nIDkah_Yn4t9QmfV54";
+  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0MTk2MzAsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMxMzgzNjMwfQ.bcpcF2k5-7o-a5LxV3OmML2HQYhWdNiTPOVRcRVCHA8";
 
 	private String newHash() throws Exception {
 		return "0x" + Hex.encodeHexString(
@@ -29,7 +29,7 @@ public class HyperledgerTestContentBackchain {
 
 	@Test
 	public void testOrchestrator() throws Exception { 
-		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.57:4000").setToken(orchestratorKey);
+		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000").setToken(orchestratorKey);
 
 	  ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
@@ -48,7 +48,7 @@ public class HyperledgerTestContentBackchain {
 
 	@Test
 	public void testParticipant() throws Exception {
-		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.57:4000").setToken(participantKey);
+		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000").setToken(participantKey);
 		ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
 		bk.hashCount();

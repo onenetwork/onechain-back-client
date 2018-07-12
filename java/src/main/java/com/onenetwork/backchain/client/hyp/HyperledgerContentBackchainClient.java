@@ -12,6 +12,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -33,9 +34,12 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
   private HttpClient client;
   private Header authHeader;
   private String baseUrl;
+  private RequestConfig httpParams;
 
   public HyperledgerContentBackchainClient(HyperledgerConfig config) {
     client = HttpClientBuilder.create().build();
+    httpParams = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(5000).build();
+    
     authHeader = new BasicHeader("Authorization", "Bearer " + config.getToken());
     baseUrl = config.getUrl();
   }
@@ -54,7 +58,8 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
 
     HttpGet httpGetReq = new HttpGet(builder.build());
     httpGetReq.addHeader(authHeader);
-
+    httpGetReq.setConfig(httpParams);
+    
     return httpGetReq;
   }
 
@@ -73,7 +78,8 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
     urlParameters.add(new BasicNameValuePair("fcn", "post"));
     urlParameters.add(new BasicNameValuePair("args", args));
     httpPostReq.setEntity(new UrlEncodedFormEntity(urlParameters, Charset.forName("UTF-8")));
-
+    httpPostReq.setConfig(httpParams);
+    
     return httpPostReq;
   }
 
