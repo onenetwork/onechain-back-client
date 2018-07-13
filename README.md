@@ -32,13 +32,27 @@ npm install -P @onenetwork/one-backchain-client --no-bin-links
 oneBcClient = require('@onenetwork/one-backchain-client');
 
 /**
- * Instantiate the backchain client,
+ * Instantiate the backchain client for Etherium network,
  * providing real values for url and contractAddress
  */
-var bc = oneBcClient({ 
-  blockchain: 'eth', 
+var bc = oneBcClient({
+// type of blockchain network currently Etherium (eth) and Hyperledger fabric (hyp) is supported
+  blockchain: 'eth',  
   url: 'http://192.168.201.55:8545', 
   contractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138"
+});
+
+//OR
+
+/**
+ * Instantiate the backchain client for Hyperldger fabric network,
+ * providing real values for url and token
+ */
+var bc = oneBcClient({
+// type of blockchain network currently Etherium (eth) and Hyperledger fabric (hyp) is supported
+  blockchain: 'hyp',  
+  url: 'http://192.168.201.55:4000', 
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzAyMTM4MzksInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzAxNzc4Mzl9.h5ARvYV4jLMMQpFJNBvinaU1tD1MkKWiengYzzOG1w8'
 });
 
 /**
@@ -74,8 +88,9 @@ A call to `require('@onenetwork/one-backchain-client')` returns a factory functi
 a new client when called.  It expects a single parameter of the following form:
 
 ```javascript
+// Etherium Netowrk   
 {
-  // blockchain type - only value supported today is 'eth' for Etherium
+  // blockchain type Etherium
   blockchain: 'eth',   
   
   // http(s) url of a node in the blockchain.
@@ -83,6 +98,20 @@ a new client when called.  It expects a single parameter of the following form:
   
   // when using eth as blockchain, provide the address to which the Backchain etherium contract has been bound in the Ethereum blockchain
   contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2"
+}
+
+// OR
+
+// Hyperledger Netowrk   
+{
+  // blockchain type Hyperledger fabric 
+  blockchain: 'hyp',   
+  
+  // http(s) url of a node in the blockchain.
+  url: 'http://localhost:4000', 
+  
+  // JWT access token for Orchestrator or Participant 
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzAyMTM4MzksInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzAxNzc4Mzl9.h5ARvYV4jLMMQpFJNBvinaU1tD1MkKWiengYzzOG1w8'
 }
 ```
 
@@ -92,7 +121,7 @@ The client object returned by the factory function supports the following method
 
 | Method | Description |
 | --- | --- |
-| getHash(index) | Hashes are stored to the Backchain sequentially in insertion order.   This method returns a promise which returns the hash stored at the given index (starting from zero). |
+| getHash(index) | Hashes are stored to the Backchain sequentially in insertion order.   This method returns a promise which returns the hash stored at the given index (starting from zero). Not support for Hyperledger fabric network. |
 | getOrchestrator() | Returns a promise which returns the address of entity acting as the Orchestrator for the Backchain. |
 | hashCount() | Returns a promise which returns the total number of hashes stored in the backchain.  See also `getHash(index)` |
 | post(hash) | Posts a new hash to the Backchain.  Available only to the Orchestrator.  Returns a promise with no arguments. |
@@ -105,7 +134,7 @@ The client object returned by the factory function supports the following proper
 
 | Method | Description |
 | --- | --- |
-| config | Captures the user's initial configuration, including `blockchain`, `url` and `contractAddress` |
+| config | Captures the user's initial configuration, including `blockchain`, `url`. Network specific config such as `contractAddress` of etherium or `token` in case of hyperledger fabric network |
 
 
 ## Java Client
@@ -125,12 +154,20 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 ### Sample Usage
 
 ```java
+// Client for Ethereum network
 EthereumConfig cfg = new EthereumConfig()
   .setUrl("http://192.168.201.55:8545")
   .setContentBackchainContractAddress("0xc5d4b021858a17828532e484b915149af5e1b138")
   .setDisputeBackchainContractAddress("0x4a6886a515a4b800f4591a6d6a60e6004a3645ab")
   .setPrivateKey("0x8ad0132f808d0830c533d7673cd689b7fde2d349ff0610e5c04ceb9d6efb4eb1")
   .setGasPrice(BigInteger.valueOf(0L)).setGasLimit(BigInteger.valueOf(999999L));
+
+// OR
+
+// Client for Hyperledger fabric network
+HyperledgerConfig cfg = new HyperledgerConfig()
+  .setUrl("http://192.168.201.55:8545")
+  .setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzAyMTM4MzksInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzAxNzc4Mzl9.h5ARvYV4jLMMQpFJNBvinaU1tD1MkKWiengYzzOG1w8");
 
 ContentBackchainClient cbk = BackchainClientFactory.newContentBackchainClient(cfg);
 System.out.println("Backchain hashCount : " + cbk.hashCount());
