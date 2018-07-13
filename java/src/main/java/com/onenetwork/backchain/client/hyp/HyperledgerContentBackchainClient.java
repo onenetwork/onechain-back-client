@@ -38,7 +38,7 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
 
   public HyperledgerContentBackchainClient(HyperledgerConfig config) {
     client = HttpClientBuilder.create().build();
-    httpParams = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(5000).build();
+    httpParams = RequestConfig.custom().setConnectTimeout(10000).setSocketTimeout(10000).build();
     
     authHeader = new BasicHeader("Authorization", "Bearer " + config.getToken());
     baseUrl = config.getUrl();
