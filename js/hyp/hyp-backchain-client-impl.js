@@ -49,8 +49,11 @@ module.exports = {
                 return executeRequest('post', hash);
             },
             verify: function(hash) {
-                return executeRequest('verify', hash);
-            }            
+              return executeRequest('verify', hash);
+            },
+            getHash: function(index) {
+              throw new Error('Not supported for Hyperledger fabric implementatoion.');
+            },
         };
     },
  
