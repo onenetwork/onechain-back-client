@@ -5,23 +5,24 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.jcajce.provider.digest.SHA224.Digest;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.onenetwork.backchain.client.BackchainClientFactory;
 import com.onenetwork.backchain.client.ContentBackchainClient;
-import com.onenetwork.backchain.client.eth.EthereumConfig;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // testOrchestrator() should be executed before testParticipant() so that hash will present in ledger for verification
 public class HyperledgerTestContentBackchain {
   
-  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0Mzg4NjEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzE0MDI4NjF9.waRCjIxFcFHH-kobtsYBSizAstVVNclahUvjN0kZR2E";
-  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE0Mzg4NjUsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMxNDAyODY1fQ.lXQwm1iXf9XnCBjZNtBaO5Vy65aiilR66IQ3ITCS88k";
-
+  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIwMjY4NTEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzE5OTA4NTF9.Ioa1Qb0bGrmLBzl16Ncgu7rb9N3pe7r-p3IBOYbKYa0";
+  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIwMjY4NTcsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMxOTkwODU3fQ.pz-Wv_94sv1XrZtScUtWbFyhDcW4enwNTKm2K7VnZgo";
+  private final String sampleHash = "0x0506d0e67v3e80ndr4a441f9c8344f93d8351e6a29b00fe249d66b1fce321bbb";
+	  
 	private String newHash() throws Exception {
 		return "0x" + Hex.encodeHexString(
 		  MessageDigest.getInstance("SHA-256").digest(("" + new Date().getTime() + Math.random()).getBytes()));
@@ -29,29 +30,32 @@ public class HyperledgerTestContentBackchain {
 
 	@Test
 	public void testOrchestrator() throws Exception { 
-		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000").setToken(orchestratorKey);
+		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://localhost:4000").setToken(orchestratorKey);
 
-	  ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
+	    ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
 		long initialHashCount = bk.hashCount();
 		//assertEquals("0xece1355c30af00ff4f03f0e37f7822ce4b660aa3", bk.getOrchestrator());
 
-		String hash = newHash();
-		bk.post(hash);
+		
+		bk.post(sampleHash);
 		long newHashCount = bk.hashCount();
 		assertEquals(initialHashCount + 1, newHashCount);
-		assertTrue(bk.verify(hash));
+		assertTrue(bk.verify(sampleHash));
 
-		hash = newHash();
+		String hash = newHash();
 		assertFalse(bk.verify(hash));
 	}
 
 	@Test
 	public void testParticipant() throws Exception {
-		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://192.168.201.55:4000").setToken(participantKey);
+		HyperledgerConfig cfg = new HyperledgerConfig().setUrl("http://localhost:4000").setToken(participantKey);
 		ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
-		bk.hashCount();
+		assertTrue(bk.hashCount() > 0);
+		assertTrue(bk.verify(sampleHash));
+		assertFalse(bk.verify(newHash()));
+		
 		//assertEquals("0xece1355c30af00ff4f03f0e37f7822ce4b660aa3", bk.getOrchestrator());
 
 		try {
