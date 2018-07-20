@@ -38,7 +38,7 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
 
   public HyperledgerContentBackchainClient(HyperledgerConfig config) {
     client = HttpClientBuilder.create().build();
-    httpParams = RequestConfig.custom().setConnectTimeout(10000).setSocketTimeout(10000).build();
+    httpParams = RequestConfig.custom().setConnectTimeout(60000).setSocketTimeout(60000).build();
     
     authHeader = new BasicHeader("Authorization", "Bearer " + config.getToken());
     baseUrl = config.getUrl();
@@ -101,27 +101,27 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
 
   @Override
   public void post(String hash) {
-    try {
-      HttpResponse response = client.execute(buildHttpPostRequest(hash));
-      if (response.getStatusLine().getStatusCode() != 200) {
-        throw new RuntimeException(response.getStatusLine().toString());
-      }
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e.getMessage());
-    }
+	try {
+		HttpResponse response = client.execute(buildHttpPostRequest(hash));
+		HttpEntity entity = response.getEntity();
+		if (response.getStatusLine().getStatusCode() != 200) {
+			throw new RuntimeException(entity != null ? EntityUtils.toString(entity) : response.getStatusLine().toString());
+		}
+	} catch (Exception e) {
+		throw new RuntimeException(e.getMessage());
+	}
   }
 
   @Override
   public boolean verify(String hash) {
     try {
       HttpResponse response = client.execute(buildHttpGetRequest("verify", hash));
+      HttpEntity entity = response.getEntity();
       if (response.getStatusLine().getStatusCode() == 200) {
-        HttpEntity entity = response.getEntity();
         return Boolean.parseBoolean(EntityUtils.toString(entity));
       }
 
-      throw new RuntimeException(response.getStatusLine().toString());
+      throw new RuntimeException(entity != null ? EntityUtils.toString(entity) : response.getStatusLine().toString());
     }
     catch (Exception e) {
       throw new RuntimeException(e.getMessage());

@@ -19,8 +19,8 @@ import com.onenetwork.backchain.client.ContentBackchainClient;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // testOrchestrator() should be executed before testParticipant() so that hash will present in ledger for verification
 public class HyperledgerTestContentBackchain {
   
-  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIwMjY4NTEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzE5OTA4NTF9.Ioa1Qb0bGrmLBzl16Ncgu7rb9N3pe7r-p3IBOYbKYa0";
-  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIwMjY4NTcsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMxOTkwODU3fQ.pz-Wv_94sv1XrZtScUtWbFyhDcW4enwNTKm2K7VnZgo";
+  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik9yY2hlc3RyYXRvclVzZXIiLCJvcmdOYW1lIjoiT3JjaGVzdHJhdG9yT3JnIiwiaWF0IjoxNTMyMDAxMzgzfQ.Wy8RITjRfd3O5wvvoUr7ReIMHtsdpYO6nB385vXIwTU";
+  private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhcnRpY2lwYW50VXNlciIsIm9yZ05hbWUiOiJQYXJ0aWNpcGFudE9yZyIsImlhdCI6MTUzMjAwMTM5MH0.Jw3bgaoOHKs6pJmsTF97mJRnoq3GCyyDW0QbLeSBAfU";
   private final String sampleHash = "0x0506d0e67v3e80ndr4a441f9c8344f93d8351e6a29b00fe249d66b1fce321bbb";
 	  
 	private String newHash() throws Exception {
