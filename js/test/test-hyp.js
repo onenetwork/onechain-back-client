@@ -10,13 +10,13 @@ var sampleHash = newHash();
 var obc = oneChain.createContentBcClient({
     blockchain: 'hyp',
     url: 'http://localhost:4000',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIwMjY4NTEsInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzE5OTA4NTF9.Ioa1Qb0bGrmLBzl16Ncgu7rb9N3pe7r-p3IBOYbKYa0'
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik9yY2hlc3RyYXRvclVzZXIiLCJvcmdOYW1lIjoiT3JjaGVzdHJhdG9yT3JnIiwiaWF0IjoxNTMyMDAxMzgzfQ.Wy8RITjRfd3O5wvvoUr7ReIMHtsdpYO6nB385vXIwTU'
 });
 
 var pbc = oneChain.createContentBcClient({
     blockchain: 'hyp',
     url: 'http://localhost:4000',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIwMjY4NTcsInVzZXJuYW1lIjoiUGFydGljaXBhbnRVc2VyIiwib3JnTmFtZSI6IlBhcnRpY2lwYW50T3JnIiwiaWF0IjoxNTMxOTkwODU3fQ.pz-Wv_94sv1XrZtScUtWbFyhDcW4enwNTKm2K7VnZgo'
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhcnRpY2lwYW50VXNlciIsIm9yZ05hbWUiOiJQYXJ0aWNpcGFudE9yZyIsImlhdCI6MTUzMjAwMTM5MH0.Jw3bgaoOHKs6pJmsTF97mJRnoq3GCyyDW0QbLeSBAfU'
 });
 
 describe('contentbackchain-client', function() {
@@ -49,8 +49,11 @@ describe('contentbackchain-client', function() {
                     return pbc.verify(newHash());
                 }).then((verified) => {
                     expect(verified).to.be.false;
-                    console.log('ContentBackchain all test cases passed. :)');
-                })
+                    return pbc.getOrchestrator();
+                }).then(function(orchestrator) {
+                    expect(orchestrator).to.equal("0x2d2d2d2d2d424547494e205055424c4943204b45592d2d2d2d2d0d0a4d466b77457759484b6f5a497a6a3043415159494b6f5a497a6a3044415163445167414536486f474a3564616c456a47417950476777654c674c365054326c4c0d0a635675344c6272734e316d62675378457658344d78493371647467545164493845305253734949746a696e74714c2b6f562f6f574b78383836413d3d0d0a2d2d2d2d2d454e44205055424c4943204b45592d2d2d2d2d0d0a");
+                    console.log('ContentBackchain all test case passed :)');
+                });
           });
     });
  

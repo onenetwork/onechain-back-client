@@ -51,6 +51,9 @@ module.exports = {
             verify: function(hash) {
               return executeRequest('verify', hash);
             },
+            getOrchestrator: function(hash) {
+                return executeRequest('getOrchestrator', ' ');
+            },
             getHash: function(index) {
               throw new Error('Not supported for Hyperledger fabric implementatoion.');
             },

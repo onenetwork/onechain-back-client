@@ -134,7 +134,17 @@ public class HyperledgerContentBackchainClient implements ContentBackchainClient
   }
 
   @Override
-  public String getOrchestrator() {
-    throw new RuntimeException("Not supported for Hyperledger fabric implementatoion.");
-  }
+	public String getOrchestrator() {
+		try {
+			HttpResponse response = client.execute(buildHttpGetRequest("getOrchestrator", " "));
+			if (response.getStatusLine().getStatusCode() == 200) {
+				HttpEntity entity = response.getEntity();
+				return EntityUtils.toString(entity);
+			}
+	
+			throw new RuntimeException(response.getStatusLine().toString());
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
 }

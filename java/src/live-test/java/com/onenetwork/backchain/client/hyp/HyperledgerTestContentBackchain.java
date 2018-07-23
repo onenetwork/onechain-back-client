@@ -19,7 +19,8 @@ import com.onenetwork.backchain.client.ContentBackchainClient;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // testOrchestrator() should be executed before testParticipant() so that hash will present in ledger for verification
 public class HyperledgerTestContentBackchain {
   
-  private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik9yY2hlc3RyYXRvclVzZXIiLCJvcmdOYW1lIjoiT3JjaGVzdHJhdG9yT3JnIiwiaWF0IjoxNTMyMDAxMzgzfQ.Wy8RITjRfd3O5wvvoUr7ReIMHtsdpYO6nB385vXIwTU";
+  private static final String ORCHESTRATOR = "0x2d2d2d2d2d424547494e205055424c4943204b45592d2d2d2d2d0d0a4d466b77457759484b6f5a497a6a3043415159494b6f5a497a6a3044415163445167414536486f474a3564616c456a47417950476777654c674c365054326c4c0d0a635675344c6272734e316d62675378457658344d78493371647467545164493845305253734949746a696e74714c2b6f562f6f574b78383836413d3d0d0a2d2d2d2d2d454e44205055424c4943204b45592d2d2d2d2d0d0a";
+private String orchestratorKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik9yY2hlc3RyYXRvclVzZXIiLCJvcmdOYW1lIjoiT3JjaGVzdHJhdG9yT3JnIiwiaWF0IjoxNTMyMDAxMzgzfQ.Wy8RITjRfd3O5wvvoUr7ReIMHtsdpYO6nB385vXIwTU";
   private String participantKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhcnRpY2lwYW50VXNlciIsIm9yZ05hbWUiOiJQYXJ0aWNpcGFudE9yZyIsImlhdCI6MTUzMjAwMTM5MH0.Jw3bgaoOHKs6pJmsTF97mJRnoq3GCyyDW0QbLeSBAfU";
   private final String sampleHash = "0x0506d0e67v3e80ndr4a441f9c8344f93d8351e6a29b00fe249d66b1fce321bbb";
 	  
@@ -35,7 +36,7 @@ public class HyperledgerTestContentBackchain {
 	    ContentBackchainClient bk = BackchainClientFactory.newContentBackchainClient(cfg);
 
 		long initialHashCount = bk.hashCount();
-		//assertEquals("0xece1355c30af00ff4f03f0e37f7822ce4b660aa3", bk.getOrchestrator());
+		assertEquals(ORCHESTRATOR, bk.getOrchestrator());
 
 		
 		bk.post(sampleHash);
@@ -56,7 +57,7 @@ public class HyperledgerTestContentBackchain {
 		assertTrue(bk.verify(sampleHash));
 		assertFalse(bk.verify(newHash()));
 		
-		//assertEquals("0xece1355c30af00ff4f03f0e37f7822ce4b660aa3", bk.getOrchestrator());
+		assertEquals(ORCHESTRATOR, bk.getOrchestrator());
 
 		try {
 			bk.post(newHash());
