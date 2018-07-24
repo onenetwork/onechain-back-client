@@ -10,10 +10,7 @@ ONE provides client APIs for:
  - [Javascript](#javascript-client)
  - [Java](#java-client)
 
-<br/>
 Licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
-<br/>
-<br/>
 
 ## Javascript Client
 
@@ -29,37 +26,32 @@ npm install -P @onenetwork/one-backchain-client --no-bin-links
 ### Sample Usage
 
 ```javascript
-oneBcClient = require('@onenetwork/one-backchain-client');
+oneChain = require('@onenetwork/one-backchain-client');
 
-/**
- * Instantiate the backchain client for Etherium network,
- * providing real values for url and contractAddress
- */
-var bc = oneBcClient({
-// type of blockchain network currently Etherium (eth) and Hyperledger fabric (hyp) is supported
+// Instantiate the backchain client for an Etherium-based network
+var contentBC = oneChain.createContentBcClient({
   blockchain: 'eth',  
   url: 'http://192.168.201.55:8545', 
-  contractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138"
+  contentBackchainContractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138",
+  disputeBackchainContractAddress: "0x4a6886a515a4b800f4591a6d6a60e6004a3645ab"
 });
 
-//OR
+// OR
 
-/**
- * Instantiate the backchain client for Hyperldger fabric network,
- * providing real values for url and token
- */
-var bc = oneBcClient({
-// type of blockchain network currently Etherium (eth) and Hyperledger fabric (hyp) is supported
+// Instantiate the backchain client for an Hyperledger-Fabric-based network
+var contentBC = oneChain.createContentBcClient({
   blockchain: 'hyp',  
   url: 'http://192.168.201.55:4000', 
   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzAyMTM4MzksInVzZXJuYW1lIjoiT3JjaGVzdHJhdG9yVXNlciIsIm9yZ05hbWUiOiJPcmNoZXN0cmF0b3JPcmciLCJpYXQiOjE1MzAxNzc4Mzl9.h5ARvYV4jLMMQpFJNBvinaU1tD1MkKWiengYzzOG1w8'
 });
 
+
+
 /**
  * Invoke the hashCount API to return the total number of hashes stored
  * on the Backchain
  */
-bc.hashCount().then(function(hashCount) {
+contentBC.hashCount().then(function(hashCount) {
   console.info("Backchain hashCount : " + hashCount);
 });
 
@@ -68,7 +60,7 @@ bc.hashCount().then(function(hashCount) {
  * is stored on the Backchain.
  */
 var sampleHash = '0xa1effcdcb5a879f222bbb028ff5f0e9571cd992600d61b2c56e7ba24c75548c3';
-bc.verify(sampleHash).then(function(verified) {
+contentBC.verify(sampleHash).then(function(verified) {
   console.info(sampleHash + " is on the Backchain? " + verified);
 });
 ```
@@ -96,8 +88,11 @@ a new client when called.  It expects a single parameter of the following form:
   // http(s) url of a node in the blockchain.
   url: 'http://localhost:8545', 
   
-  // when using eth as blockchain, provide the address to which the Backchain etherium contract has been bound in the Ethereum blockchain
-  contractAddress: "0xdd556330eb32c9daa558ab2327f7a044d292b1a2"
+  // Address to which the Backchain "Content" contract has been bound
+  contentBackchainContractAddress: "0xc5d4b021858a17828532e484b915149af5e1b138",
+
+  // Address to which the Backchain "Dispute" contract has been bound
+  disputeBackchainContractAddress: "0x4a6886a515a4b800f4591a6d6a60e6004a3645ab"
 }
 
 // OR
@@ -147,7 +142,7 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 <dependency>
   <groupId>com.onenetwork.onechain</groupId>
   <artifactId>onechain-back-client</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
 </dependency>
 ```
 
