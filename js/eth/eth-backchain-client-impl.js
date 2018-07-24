@@ -550,7 +550,7 @@ module.exports = {
             getOrchestrator: function() {
                 return disputeContract.methods.getOrchestrator().call();
             },
-            getFilterDisputeIds(disputeFilter) {
+            getFilterDisputeIds: function(disputeFilter) {
                 if (!isValidBytes(disputeFilter.disputeId)) {
                     return Promise.reject(new Error("disputeId is invalid byte string: " + disputeFilter.disputeId));
                 }
@@ -648,7 +648,7 @@ module.exports = {
                     }
                     var arrayOfDisputePromises = [];
                     var disputePromiseFn = function(disputeId) {
-                        return new Promise((resolve) => {
+                        return new Promise(function(resolve) {
                             resolve(me.getDispute(disputeId));
                         });
                     };
