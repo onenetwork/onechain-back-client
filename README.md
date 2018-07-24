@@ -142,7 +142,7 @@ The java client is available as a maven dependency from ONE's bintray repo: <a h
 <dependency>
   <groupId>com.onenetwork.onechain</groupId>
   <artifactId>onechain-back-client</artifactId>
-  <version>0.2.2</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
