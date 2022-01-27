@@ -1,6 +1,6 @@
 {
   "name": "@onenetwork/one-backchain-client",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Sample client for ONE's Backchain",
   "main": "backchain-client.js",
   "scripts": {
