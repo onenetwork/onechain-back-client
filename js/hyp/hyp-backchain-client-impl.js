@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('request-promise')
+const axios = require('axios');
 
 module.exports = {
     /**
@@ -26,18 +26,15 @@ module.exports = {
 
             var params = {fcn: fcn, args: args};
             if('post' === fcn){
-                options['uri'] = baseUri + 'invoke';
-                options['method'] = 'POST';
-                options['body'] = params;
+              return axios.post(baseUri + 'invoke', {
+                params: params
+              });
             }else{
-                options['uri'] = baseUri + 'query';
-                options['method'] = 'GET';
-                options['qs'] = params;
+              return axios.get(baseUri + 'query', {
+                params: params
+              });
             }
-            
-            return request(options);
         }
-
         return {
             config: config,
             hashCount: function() {
