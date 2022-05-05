@@ -1,6 +1,7 @@
 package com.onenetwork.backchain.client.eth;
 
-import org.web3j.abi.datatypes.generated.Uint256;
+import java.math.BigInteger;
+
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -39,27 +40,52 @@ public class EthereumContentBackchainClient implements ContentBackchainClient {
   
   @Override
   public String getHash(long index) {
-    return EthereumHelper.await(() -> EthereumHelper.hashBytesToString(contentBackchainABI.getHash(new Uint256(index)).get()));
+    try {
+      return EthereumHelper.hashBytesToString(contentBackchainABI.getHash(new BigInteger("" + index)).send());
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public String getOrchestrator() {
-    return EthereumHelper.await(() -> contentBackchainABI.orchestrator().get().toString());
+    try {
+      return contentBackchainABI.orchestrator().send();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public long hashCount() {
-    return EthereumHelper.await(() -> contentBackchainABI.hashCount().get().getValue().longValue());
+    try {
+      return contentBackchainABI.hashCount().send().longValue();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public void post(String hash) {
-    EthereumHelper.await(() -> contentBackchainABI.post(EthereumHelper.hashStringToBytes(hash)).get());
+    try {
+      contentBackchainABI.post(EthereumHelper.hashStringToBytes(hash)).send();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public boolean verify(String hash) {
-    return EthereumHelper.await(() -> contentBackchainABI.verify(EthereumHelper.hashStringToBytes(hash)).get().getValue());
+    try {
+      return contentBackchainABI.verify(EthereumHelper.hashStringToBytes(hash)).send();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }
