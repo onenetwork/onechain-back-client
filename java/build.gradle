@@ -19,7 +19,7 @@ sourceSets {
 }
 
 dependencies {
-  api 'org.web3j:core:2.3.1'
+  api 'org.web3j:core:4.0.1'
   compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
   testCompile 'junit:junit:4.12'
 }
@@ -40,9 +40,9 @@ task initWeb3jCLI(dependsOn: init) {
   group 'Ethereum'
   doLast {
     ant.mkdir(dir: './build')
-    ant.get(src: 'https://github.com/web3j/web3j/releases/download/v2.3.1/web3j-2.3.1.zip', dest: './build/web3j.zip')
-    ant.unzip(src: './build/web3j.zip', dest: './build')
-    ant.move(file: './build/web3j-2.3.1', tofile: './build/web3j')
+    ant.get(src: 'https://github.com/web3j/web3j/releases/download/v4.0.1/web3j-4.0.1.tar', dest: './build/web3j.tar')
+    ant.untar(src: './build/web3j.tar', dest: './build')
+    ant.move(file: './build/web3j-4.0.1', tofile: './build/web3j')
     ant.chmod(file: './build/web3j/bin/web3j', perm: 'ugo+x')
   }
   onlyIf {
@@ -55,10 +55,10 @@ task generateContractBackchainWrapper(type: Exec, dependsOn: initWeb3jCLI) {
   group 'Ethereum'
   workingDir '.'
   if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-    commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '../ContentBackchainABI.bin', '../ContentBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+    commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '-b', '../ContentBackchainABI.bin', '-a', '../ContentBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
   }
   else {
-    commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '../ContentBackchainABI.bin', '../ContentBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+    commandLine 'build/web3j/bin/web3j', 'solidity', 'generate', '-b', '../ContentBackchainABI.bin', '-a', '../ContentBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
   }
   doLast {
     ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/ContentBackchainABI.java', match: 'public final class ContentBackchainABI', replace: 'class ContentBackchainABI')
@@ -73,10 +73,10 @@ task generateDisputeBackchainWrapper(type: Exec, dependsOn: initWeb3jCLI) {
   group 'Ethereum'
   workingDir '.'
   if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-      commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '../DisputeBackchainABI.bin', '../DisputeBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+      commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '-b', '../DisputeBackchainABI.bin', '-a', '../DisputeBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
   }
   else {
-      commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '../DisputeBackchainABI.bin', '../DisputeBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
+      commandLine 'build/web3j/bin/web3j.bat', 'solidity', 'generate', '-b', '../DisputeBackchainABI.bin', '-a', '../DisputeBackchainABI.json', '-o', 'build/gen-src', '-p', 'com.onenetwork.backchain.client.eth'
   }
   doLast {
     ant.replaceregexp(file: 'build/gen-src/com/onenetwork/backchain/client/eth/DisputeBackchainABI.java', match: 'public final class DisputeBackchainABI', replace: 'class DisputeBackchainABI')
