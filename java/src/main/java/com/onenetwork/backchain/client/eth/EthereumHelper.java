@@ -1,8 +1,10 @@
 package com.onenetwork.backchain.client.eth;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -38,13 +40,31 @@ final class EthereumHelper {
     }
   }
 
-  public static Bytes32 hashStringToBytes(String hash) throws DecoderException {
+  public static Bytes32 hashStringToBytes32(String hash) throws DecoderException {
     return new Bytes32(
       Hex.decodeHex((hash.toUpperCase().startsWith("0X") ? hash.substring(2, hash.length()) : hash).toCharArray()));
   }
 
+  public static byte[] hashStringToBytes(String hash) {
+    try {
+      return Hex.decodeHex((hash.toUpperCase().startsWith("0X") ? hash.substring(2, hash.length()) : hash).toCharArray());
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public static String hashBytesToString(Bytes32 bytes) throws DecoderException {
     return bytes == null ? null : "0x" + new String(Hex.encodeHex(bytes.getValue()));
+  }
+
+  public static String hashBytesToString(byte[] bytes) {
+    try {
+      return bytes == null ? null : "0x" + new String(Hex.encodeHex(bytes));
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public static String newHash() throws Exception {
@@ -57,7 +77,7 @@ final class EthereumHelper {
     DynamicArray<Bytes32> dynamicBytes32;
     Bytes32[] bytes32Array = new Bytes32[hashes == null ? 0 : hashes.length];
     for (int i = 0; i < bytes32Array.length; i++) {
-      bytes32Array[i] = hashStringToBytes(hashes[i]);
+      bytes32Array[i] = hashStringToBytes32(hashes[i]);
     }
 
     if (bytes32Array.length > 0) {
@@ -67,6 +87,16 @@ final class EthereumHelper {
       dynamicBytes32 = DynamicArray.empty(Bytes32.TYPE_NAME + "32[]");
     }
     return dynamicBytes32;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static List<byte[]> convertAndGetBytes(String[] hashes) {
+    List<byte[]> byteLists = new ArrayList<>();
+    for (int i = 0; i < hashes.length; i++) {
+      byteLists.add(hashStringToBytes(hashes[i]));
+    }
+
+    return byteLists;
   }
 
   @SuppressWarnings("unchecked")
