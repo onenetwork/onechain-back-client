@@ -184,7 +184,18 @@ Backchain hashCount is: 13
 OPEN
 ```
 
+### Building
 
-### API
+To build the java client, run the following (using JDK 1.8):
 
-Please view the <a href="https://onenetwork.github.io/onechain-back-client/javadoc/">ONE Backchain Client Javadocs</a>
+```
+gradlew clean jar
+```
+
+To generate maven artifacts for publication, run:
+
+```
+gradlew publishToMavenLocal
+```
+
+This will generate a POM file into java\build\publications\mavenJava

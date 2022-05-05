@@ -1,5 +1,6 @@
 package com.onenetwork.backchain.client.eth;
 
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -117,19 +118,12 @@ final class EthereumHelper {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T extends Enum<T>> DynamicArray<Uint256> convertAndGetUint256DA(T[] enumValues) {
-    DynamicArray<Uint256> uint256DA;
-    Uint256[] uint256Array = new Uint256[enumValues == null ? 0 : enumValues.length];
-    for (int i = 0; i < uint256Array.length; i++) {
-      uint256Array[i] = new Uint256(enumValues[i].ordinal());
+  public static <T extends Enum<T>> List<BigInteger> convertAndGetBigIntegers(T[] enumValues) {
+    List<BigInteger> bigInts = new ArrayList<>();
+    for (int i = 0; i < enumValues.length; i++) {
+      bigInts.add(new BigInteger("" + enumValues[i].ordinal()));
     }
-    if (uint256Array.length > 0) {
-      uint256DA = new DynamicArray<>(uint256Array);
-    }
-    else {
-      uint256DA = DynamicArray.empty(Uint256.TYPE_NAME + "256[]");
-    }
-    return uint256DA;
+    return bigInts;
   }
 
   public static <T> boolean isNullOrEmpty(T param) {
@@ -144,6 +138,10 @@ final class EthereumHelper {
 
   public static Uint256 getTimeInUint256(Calendar cal) {
     return new Uint256(cal == null ? 0 : cal.getTimeInMillis());
+  }
+
+  public static BigInteger getTimeInBigInteger(Calendar cal) {
+    return new BigInteger("" + cal.getTimeInMillis());
   }
 
   private static MessageDigest DIGEST;

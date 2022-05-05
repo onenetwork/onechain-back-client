@@ -4,19 +4,16 @@ package com.onenetwork.backchain.client.eth;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.codec.DecoderException;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.DynamicArray;
-import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes32;
-import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.generated.Tuple3;
+import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tx.ClientTransactionManager;
 
 import com.onenetwork.backchain.client.BackchainClientConfig;
@@ -75,13 +72,17 @@ public class EthereumDisputeBackchainClient implements DisputeBackchainClient {
     if (EthereumHelper.isNullOrEmpty(dispute.getReason())) {
       throw new IllegalArgumentException("Reason is a required field");
     }
-    EthereumHelper.await(
-      () -> disputeBackchainABI.submitDispute(
-        EthereumHelper.hashStringToBytes(dispute.getDisputeID()),
-        new Address(dispute.getDisputingParty()),
-        EthereumHelper.hashStringToBytes(dispute.getDisputedTransactionID()),
-        EthereumHelper.convertAndGetBytes32DA(dispute.getDisputedBusinessTransactionIDs()),
-        new Utf8String(dispute.getReason().toString())).get());
+    try {
+      disputeBackchainABI.submitDispute(
+          EthereumHelper.hashStringToBytes(dispute.getDisputeID()),
+          dispute.getDisputingParty(),
+          EthereumHelper.hashStringToBytes(dispute.getDisputedTransactionID()),
+          EthereumHelper.convertAndGetBytes(dispute.getDisputedBusinessTransactionIDs()),
+          dispute.getReason().toString()).send();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -97,7 +98,7 @@ public class EthereumDisputeBackchainClient implements DisputeBackchainClient {
     if (EthereumHelper.isNullOrEmpty(disputeID)) {
       new IllegalArgumentException("disputeID is required. It cannot be null or empty");
     }
-    return EthereumHelper.await(() -> getDispute(EthereumHelper.hashStringToBytes(disputeID), disputeID));
+    return getDispute(EthereumHelper.hashStringToBytes(disputeID), disputeID);
   }
 
   @Override
@@ -105,89 +106,110 @@ public class EthereumDisputeBackchainClient implements DisputeBackchainClient {
     return getFilterDisputeIDs(disputeFilter).size();
   }
 
-  private List<Bytes32> getFilterDisputeIDs(DisputeFilter disputeFilter) {
-    DynamicArray<Bytes32> disputeIDHash = EthereumHelper.await(
-      () -> disputeBackchainABI.filterDisputeByHeaders(
-        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputeIDs()),
-        EthereumHelper.convertAndGetAddressDA(disputeFilter.getDisputingParties()),
-        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputedTransactionIDs()),
-        EthereumHelper.convertAndGetBytes32DA(disputeFilter.getDisputedBusinessTransactionIDs())).get());
-
-    if (disputeIDHash.getValue().size() <= 0) {
-      return disputeIDHash.getValue();
+  @SuppressWarnings("unchecked")
+  private List<byte[]> getFilterDisputeIDs(DisputeFilter disputeFilter) {
+    try {
+      List<byte[]> disputeIDHash = disputeBackchainABI.filterDisputeByHeaders(
+          EthereumHelper.convertAndGetBytes(disputeFilter.getDisputeIDs()),
+          Arrays.asList(disputeFilter.getDisputingParties()),
+          EthereumHelper.convertAndGetBytes(disputeFilter.getDisputedTransactionIDs()),
+          EthereumHelper.convertAndGetBytes(disputeFilter.getDisputedBusinessTransactionIDs())).send();
+  
+      if (disputeIDHash.size() <= 0) {
+        return disputeIDHash;
+      }
+      
+      List<byte[]> disputeIDHashDetail = disputeBackchainABI.filterDisputeByDetail(
+          disputeIDHash,
+          EthereumHelper.getTimeInBigInteger(disputeFilter.getSubmittedStartDate()),
+          EthereumHelper.getTimeInBigInteger(disputeFilter.getSubmittedEndDate()),
+          EthereumHelper.getTimeInBigInteger(disputeFilter.getCloseStartDate()),
+          EthereumHelper.getTimeInBigInteger(disputeFilter.getCloseEndDate()),
+          EthereumHelper.convertAndGetBigIntegers(disputeFilter.getStates()),
+          EthereumHelper.convertAndGetBigIntegers(disputeFilter.getReasons())).send();
+  
+      return disputeIDHashDetail;
     }
-    DynamicArray<Bytes32> disputeIDHashDetail = EthereumHelper.await(
-      () -> disputeBackchainABI.filterDisputeByDetail(
-        disputeIDHash,
-        EthereumHelper.getTimeInUint256(disputeFilter.getSubmittedStartDate()),
-        EthereumHelper.getTimeInUint256(disputeFilter.getSubmittedEndDate()),
-        EthereumHelper.getTimeInUint256(disputeFilter.getCloseStartDate()),
-        EthereumHelper.getTimeInUint256(disputeFilter.getCloseEndDate()),
-        EthereumHelper.convertAndGetUint256DA(disputeFilter.getStates()),
-        EthereumHelper.convertAndGetUint256DA(disputeFilter.getReasons())).get());
-
-    return disputeIDHashDetail.getValue();
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  private Dispute getDispute(Bytes32 disputeIDHash, String disputeID) throws DecoderException {
-    Dispute dispute = new Dispute().setDisputeID(disputeID);
-    @SuppressWarnings("rawtypes")
-    List<Type> headerData = EthereumHelper.await(() -> disputeBackchainABI.getDisputeHeader(disputeIDHash).get());
-    @SuppressWarnings("rawtypes")
-    List<Type> detailData = EthereumHelper.await(() -> disputeBackchainABI.getDisputeDetail(disputeIDHash).get());
-    dispute.setDisputingParty(headerData.get(0).toString())
-      .setDisputedTransactionID(EthereumHelper.hashBytesToString((Bytes32) headerData.get(1)));
-    List<?> businessTransactionList = (List<?>) headerData.get(2).getValue();
-    String[] businessTrasactionIDs = new String[businessTransactionList.size()];
-    for (int i = 0; i < businessTrasactionIDs.length; i++) {
-      businessTrasactionIDs[i] = EthereumHelper.hashBytesToString((Bytes32) businessTransactionList.get(i));
+  private Dispute getDispute(byte[] disputeIDHash, String disputeID) {
+    try {
+      Dispute dispute = new Dispute().setDisputeID(disputeID);
+      @SuppressWarnings("rawtypes")
+      Tuple3<String, byte[], List<byte[]>> headerData = disputeBackchainABI.getDisputeHeader(disputeIDHash).send();
+      @SuppressWarnings("rawtypes")
+      Tuple4<BigInteger, BigInteger, String, String> detailData = disputeBackchainABI.getDisputeDetail(disputeIDHash).send();
+      dispute.setDisputingParty(headerData.getValue1().toString())
+        .setDisputedTransactionID(EthereumHelper.hashBytesToString(headerData.getValue2()));
+      List<?> businessTransactionList = (List<?>) headerData.getValue3();
+      String[] businessTrasactionIDs = new String[businessTransactionList.size()];
+      for (int i = 0; i < businessTrasactionIDs.length; i++) {
+        businessTrasactionIDs[i] = EthereumHelper.hashBytesToString((Bytes32) businessTransactionList.get(i));
+      }
+      dispute.setDisputedBusinessTransactionIDs(businessTrasactionIDs);
+      Calendar submitDateCal = Calendar.getInstance();
+      submitDateCal.setTimeInMillis(detailData.getValue1().longValue());
+      dispute.setSubmittedDate(submitDateCal);
+      long closeTime = detailData.getValue2().longValue();
+      if (closeTime > 0L) {
+        Calendar closedDateCal = Calendar.getInstance();
+        closedDateCal.setTimeInMillis(closeTime);
+        dispute.setCloseDate(closedDateCal);
+      }
+      dispute.setState(Dispute.State.valueOf(detailData.getValue3()));
+      dispute.setReason(Dispute.Reason.valueOf(detailData.getValue4()));
+      return dispute;
     }
-    dispute.setDisputedBusinessTransactionIDs(businessTrasactionIDs);
-    Calendar submitDateCal = Calendar.getInstance();
-    submitDateCal.setTimeInMillis(((BigInteger) (detailData.get(0).getValue())).longValue());
-    dispute.setSubmittedDate(submitDateCal);
-    long closeTime = ((BigInteger) (detailData.get(1).getValue())).longValue();
-    if (closeTime > 0L) {
-      Calendar closedDateCal = Calendar.getInstance();
-      closedDateCal.setTimeInMillis(closeTime);
-      dispute.setCloseDate(closedDateCal);
+    catch (Exception e) {
+      throw new RuntimeException(e);
     }
-    dispute.setState(Dispute.State.valueOf((String) detailData.get(2).getValue()));
-    dispute.setReason(Dispute.Reason.valueOf((String) detailData.get(3).getValue()));
-    return dispute;
   }
 
   @Override
   public List<Dispute> filterDisputes(DisputeFilter disputeFilter) {
-    List<Bytes32> disputeIDHashList = getFilterDisputeIDs(disputeFilter);
+    List<byte[]> disputeIDHashList = getFilterDisputeIDs(disputeFilter);
     if (disputeIDHashList.size() <= 0) {
       return new ArrayList<>();
     }
 
-    return EthereumHelper.await(() -> {
-      int disputeCount = disputeIDHashList.size();
-      List<Dispute> disputes = new ArrayList<>(disputeCount);
-      for (int i = 0; i < disputeCount; i++) {
-        disputes.add(getDispute(disputeIDHashList.get(i), EthereumHelper.hashBytesToString(disputeIDHashList.get(i))));
-      }
-      return disputes;
-    });
+    int disputeCount = disputeIDHashList.size();
+    List<Dispute> disputes = new ArrayList<>(disputeCount);
+    for (int i = 0; i < disputeCount; i++) {
+      disputes.add(getDispute(disputeIDHashList.get(i), EthereumHelper.hashBytesToString(disputeIDHashList.get(i))));
+    }
+    return disputes;
   }
 
   @Override
   public int getDisputeSubmissionWindowInMinutes() {
-    return EthereumHelper
-      .await(() -> disputeBackchainABI.getDisputeSubmissionWindowInMinutes().get().getValue().intValue());
+    try {
+      return disputeBackchainABI.getDisputeSubmissionWindowInMinutes().send().intValue();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public void setDisputeSubmissionWindowInMinutes(int timeInMinutes) {
-    EthereumHelper
-      .await(() -> disputeBackchainABI.setDisputeSubmissionWindowInMinutes(new Uint256(timeInMinutes)).get());
+    try {
+      disputeBackchainABI.setDisputeSubmissionWindowInMinutes(new BigInteger("" + timeInMinutes)).send();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public String getOrchestrator() {
-    return EthereumHelper.await(() -> disputeBackchainABI.getOrchestrator().get().toString());
+    try {
+      return disputeBackchainABI.getOrchestrator().send();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

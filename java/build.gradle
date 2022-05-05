@@ -24,7 +24,7 @@ dependencies {
   testCompile 'junit:junit:4.12'
 }
 
-version = '0.3.0'
+version = '0.4.0'
 
 jar {
   manifest {
@@ -98,25 +98,7 @@ publishing {
       from components.java
       groupId 'com.onenetwork.onechain'
       artifactId 'onechain-back-client'
-      version '0.3.0'
-    }
-  }
-}
-
-bintray {
-  user = System.getenv('BINTRAY_USER')
-  key = System.getenv('BINTRAY_KEY')
-  publications = ['mavenJava']
-  pkg {
-    repo = 'onechain'
-    name = 'onechain-back-client'
-    userOrg = 'onenetwork'
-    licenses = ['Apache-2.0']
-    vcsUrl = 'https://github.com/onenetwork/onechain-back-client'
-    version {
-      name = '0.3.0'
-      desc = 'onechain-back-client 0.3.0'
-      released = new Date()
+      version '0.4.0'
     }
   }
 }
